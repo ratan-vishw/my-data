@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+    }
+    body {
+      background-color: #485696;
+      font-family: arial;
+      margin-top: 100px;;
+
+    }
+    h2 {
+      text-align: center;
+      font-size: 6em;
+    }
+    #container {
+      text-align: center;
+    }
+    button {
+      background-color: #fe9766;
+      border-style: solid;    
+      border-radius: 4px;
+      border: none;
+      margin: 10px;
+      font-size: 20px;
+      transition: 0.15s, hover;
+      &:hover {
+        background-color: #F24C00;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2 id="output">
+  0
+  </h2>
+  <div id="container">
+    <button id="increase">INCREASE</button>
+    <button id="reset">RESET</button>
+    <button id="decrease">DECREASE</button>
+  </div>
+  <script>
+    let outf = document.getElementById("output");
+    document.getElementById("increase").addEventListener("click", function (){
+      outf.textContent = Number(outf.textContent) + 1;
+    });
+
+    document.getElementById("decrease").addEventListener("click", function(){
+      outf.textContent = Number(outf.textContent) + -1
+    })
+
+    document.querySelector("#reset").addEventListener("click", function(){
+      outf.innerHTML = 0;
+    })
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <script>
+    function greeting(){
+      console.log(`hello!`);
+    }
+    greeting();
+
+    // Funtion are variable
+    const greeting1 = function greet(){
+      console.log(`hii dev`)
+    }
+    console.log(greeting1)
+    greeting1();
+
+    const object1 = {mess: `hii`,
+      fun: function(){
+        console.log(`hilo`)
+      }
+    }
+    object1.fun();
+
+    //passimg a value into a function
+    function display(para){
+      console.log(para);
+    }
+    display(2);
+
+    function run(param){
+      param();
+    }
+    run(function(){
+      console.log(`helllo`)
+    });
+
+
+    //setTimeout
+    setTimeout(function(){
+      console.log(`timeout`);
+    }, 3000);
+    console.log(`next line`);
+
+    //setInterval
+    setInterval(function(){
+      console.log(`interval`);
+    }, 3000);
+  </script>
+</body>
+</html>

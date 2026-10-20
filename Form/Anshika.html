@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <form method="POST" action="backnd.php" onSubmit="callFun(event)">
+    click on submit button to submit the form data.........<br><br>
+    <input type="text" >
+    <input type="submit" value="submit" />
+  </form>
+
+  <script type="text/javascript">
+    function callFun(event) {
+      event.preventDefault();  // Prevent form submission
+      document.write("Your data will be successfully submitted.");
+    }
+  </script>
+</body>
+</html>

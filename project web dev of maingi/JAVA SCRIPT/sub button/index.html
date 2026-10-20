@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      DOM Project
+    </title>
+    <style>
+      .sub-btn {
+        background-color: black;
+        color: white;
+        border-style: solid ;
+        border-radius: 5px;
+        border: none;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: 10px;
+      }
+      .is-subed {
+        background-color:lightgrey;      
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>
+      Youtube Subscribe buttom...
+    </h2>
+    <button class="sub-btn">
+      SUBSCRIBE
+    </button>
+    <br>
+    <br>
+    
+    <!--2nd -->
+    <p>if cost is lower the 40$,
+    deliver charges 5$.</p>
+    <p>Or for above 40$ free delivery.</p>
+    <label>price: </label>
+    <input class="input" placeholder="type your price">
+    <button class="calc">Calculate</button>
+    <p class="TotalPrice">Total Price: _</p>
+    
+    <script>
+      document.addEventListener("DOMContentLoaded", function(){
+
+        const subBtn = document.querySelector(".sub-btn");
+          subBtn.addEventListener("click", function(){
+
+            if (subBtn.textContent.trim() === "SUBSCRIBE"){
+            subBtn.textContent = "SUBSCRIBED";
+            subBtn.classList.add("is-subed");
+            }else{
+              subBtn.textContent = "SUBSCRIBE"
+              subBtn.classList.remove("is-subed");
+            }
+          });
+          
+          
+          document.querySelector(".calc").addEventListener("click",calcu);
+            
+          function calcu(){
+            const cost = document.querySelector(".input");
+            let value = Number(cost.value);
+            let totalValue;
+            if (value < 40){
+              totalValue = Number(value) + 5;
+            }else {
+              totalValue = value;
+            }
+           document.querySelector(".TotalPrice").textContent = (`Total Price: $${totalValue}.`);
+          };
+          
+          document.querySelector(".input").addEventListener("keydown", function(event){
+            if (event.key === "Enter"){
+              calcu();
+            }
+          });
+          
+      });
+    </script>
+  </body>
+</html>

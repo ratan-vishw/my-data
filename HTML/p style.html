@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Default styles for the paragraph */
+        p {
+            font-size: 18px;
+            color: black;
+        }
+    </style>
+    <title>Using p.style in JavaScript</title>
+</head>
+<body>
+    <p id="myParagraph">This is a paragraph.</p>
+    <button onclick="changeStyle()">Change Style</button>
+
+    <script>
+        // Function to change the style of the paragraph using p.style
+        function changeStyle() {
+            var p = document.getElementById("myParagraph");
+            p.style.color = "blue";            // Change text color to blue
+            p.style.fontSize = "24px";         // Change font size to 24px
+            p.style.backgroundColor = "yellow"; // Change background color to yellow
+        }
+    </script>
+</body>
+</html>

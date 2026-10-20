@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stock Manager — Voucher Card (Busy-style)</title>
+    <style>
+        :root {
+            --cyan-1: #cdeeed;
+            --cyan-2: #e6f7f6;
+            --border: #c3cfcf;
+            --border-strong: #93a6a6;
+            --ink: #17201f;
+            --muted: #5c6b6b;
+            --accent: #0c6b63;
+            --accent-ink: #ffffff;
+            --primary-row: #0c6b63;
+            --secondary-row: #b8781a;
+            --danger: #b3382a;
+            --success: #1f7a4d;
+            --page-bg: #e9eeee;
+            --card-bg: #ffffff;
+            --thead-bg: #eef3f3;
+            --zebra: #f7faf9;
+            --radius: 6px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", "Inter", Tahoma, Arial, sans-serif;
+            background: var(--page-bg);
+            color: var(--ink);
+            padding: 28px 16px 80px;
+            font-size: 13.5px;
+            line-height: 1.4;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 1px;
+        }
+
+        /* ── Page chrome ── */
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .page-header h1 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 0 0 2px;
+            letter-spacing: .01em;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: .78rem;
+        }
+
+        .legend {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            font-size: .72rem;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend i {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .legend i.p {
+            background: var(--primary-row);
+        }
+
+        .legend i.s {
+            background: var(--secondary-row);
+        }
+
+        .ghost-btn {
+            background: #fff;
+            border: 1px solid var(--border-strong);
+            color: var(--accent);
+            padding: 7px 14px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: .78rem;
+            cursor: pointer;
+            transition: .15s;
+            white-space: nowrap;
+        }
+
+        .ghost-btn:hover {
+            background: var(--cyan-2);
+            border-color: var(--accent);
+        }
+
+        .cards-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* ── Voucher Card ── */
+        .voucher {
+            background: var(--card-bg);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(15, 30, 30, .08);
+            overflow: hidden;
+        }
+
+        /* Header row 1 */
+        .v-head {
+            background: var(--cyan-1);
+            padding: 10px 14px 6px;
+            display: grid;
+            grid-template-columns: 180px 1fr 34px;
+            gap: 10px 14px;
+            align-items: end;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .v-head2 {
+            background: var(--cyan-2);
+            padding: 8px 14px 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 150px;
+            gap: 10px 14px;
+            align-items: end;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .field label {
+            display: block;
+            font-size: .62rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 3px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            background: #fff;
+            padding: 5px 7px;
+            font-size: .8rem;
+            color: var(--ink);
+            font-family: inherit;
+            outline: none;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(12, 107, 99, .12);
+        }
+
+        .field .readonly-val {
+            font-weight: 700;
+            font-size: .8rem;
+            padding: 5px 0 4px;
+            color: var(--ink);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .day-tag {
+            font-size: .68rem;
+            color: var(--muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .close-card {
+            background: transparent;
+            border: none;
+            color: #7a8888;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            justify-self: end;
+        }
+
+        .close-card:hover {
+            background: rgba(179, 56, 42, .1);
+            color: var(--danger);
+        }
+
+        .type-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .type-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Table */
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table.voucher-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        .voucher-table thead th {
+            background: var(--thead-bg);
+            color: var(--muted);
+            font-size: .62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border-strong);
+            border-right: 1px solid var(--border);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .voucher-table thead th:last-child {
+            border-right: none;
+        }
+
+        .voucher-table td {
+            border-right: 1px solid var(--border);
+            padding: 0;
+            vertical-align: middle;
+        }
+
+        .voucher-table td:last-child {
+            border-right: none;
+        }
+
+        .item-block-end td {
+            border-bottom: 1.5px solid var(--border-strong);
+        }
+
+        .row1 td {
+            border-bottom: 1px dashed #dbe3e3;
+        }
+
+        .row1 .qty-cell,
+        .row1 .amt-cell {
+            border-bottom: 1px dashed #dbe3e3;
+        }
+
+        .sn-cell {
+            text-align: center;
+            color: var(--muted);
+            font-size: .72rem;
+            font-family: ui-monospace, "JetBrains Mono", monospace;
+        }
+
+        .item-cell {
+            padding: 4px 0 5px;
+            vertical-align: top;
+        }
+
+        .item-cell input {
+            font-weight: 600;
+        }
+
+        .item-cell .item-name {
+            font-weight: 600;
+            display: block;
+        }
+
+        .item-sub-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 3px 0 0;
+        }
+
+        .item-cell .item-detail {
+            font-weight: 400;
+            font-size: .71rem;
+            color: var(--muted);
+            flex: 0 0 50%;
+            max-width: 50%;
+            min-width: 0;
+        }
+
+        .item-badges {
+            flex: 0 0 50%;
+            max-width: 50%;
+            min-width: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+            padding: 6px 4px 6px 2px;
+        }
+
+        .item-badge {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            background: var(--cyan-2);
+            border: 1px solid #b7d9d6;
+            color: var(--accent);
+            font-size: .64rem;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .item-badge.cat {
+            background: #f3f0fb;
+            border-color: #d9d0f0;
+            color: #6a3fb5;
+        }
+
+        .cell-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 6px 7px;
+            font-size: .78rem;
+            color: var(--ink);
+            font-family: inherit;
+            outline: none;
+            border-radius: 3px;
+        }
+
+        .cell-input:hover {
+            border-color: var(--border);
+        }
+
+        .cell-input:focus {
+            background: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(12, 107, 99, .1);
+        }
+
+        .cell-input[disabled] {
+            color: #b7c2c2;
+            background: #f3f6f6;
+        }
+
+        .cell-input.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .cell-input.num::-webkit-outer-spin-button,
+        .cell-input.num::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .cell-input.num {
+            -moz-appearance: textfield;
+        }
+
+        .amt-cell .cell-input {
+            font-family: ui-monospace, "JetBrains Mono", monospace;
+            font-weight: 600;
+            text-align: right;
+            color: #1a2b2b;
+        }
+
+        .qty-cell {
+            border-left: 3px solid transparent;
+        }
+
+        tr.row1 .qty-cell {
+            border-left-color: var(--primary-row);
+        }
+
+        tr.row2 .qty-cell {
+            border-left-color: var(--secondary-row);
+        }
+
+        .action-cell {
+            text-align: center;
+        }
+
+        .row-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #8a9797;
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            font-size: .85rem;
+            line-height: 1;
+        }
+
+        .row-btn:hover {
+            background: rgba(179, 56, 42, .1);
+            color: var(--danger);
+        }
+
+        .toggle-unit-btn {
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            color: var(--muted);
+            font-size: .62rem;
+            font-weight: 700;
+            border-radius: 4px;
+            padding: 2px 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .toggle-unit-btn.active {
+            background: var(--cyan-2);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .blank-row td {
+            color: #c3cccc;
+        }
+
+        .blank-row .cell-input::placeholder {
+            color: #cfd8d8;
+        }
+
+        .add-row-strip {
+            padding: 6px 10px;
+            border-top: 1px dashed var(--border);
+            background: #fbfdfd;
+        }
+
+        .add-row-strip button {
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: .74rem;
+            cursor: pointer;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        .add-row-strip button:hover {
+            background: var(--cyan-2);
+        }
+
+        /* Footer */
+        .v-foot {
+            padding: 10px 14px;
+            border-top: 1px solid var(--border-strong);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: #fcfdfd;
+        }
+
+        .foot-left {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .flat-btn {
+            background: #fff;
+            border: 1px dashed var(--border-strong);
+            color: var(--muted);
+            padding: 5px 11px;
+            border-radius: 4px;
+            font-size: .72rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .flat-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--cyan-2);
+        }
+
+        .file-tag {
+            background: #eef3f3;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 9px;
+            font-size: .7rem;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .file-tag .rm {
+            cursor: pointer;
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .totals {
+            text-align: right;
+            font-size: .75rem;
+            color: var(--muted);
+            display: grid;
+            grid-row-gap: 2px;
+        }
+
+        .totals .line {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .totals .line .lbl {
+            color: var(--muted);
+        }
+
+        .totals .line .val {
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: var(--ink);
+            min-width: 90px;
+            text-align: right;
+        }
+
+        .totals .grand {
+            font-size: .95rem;
+            font-weight: 800;
+            color: var(--ink);
+            margin-top: 2px;
+        }
+
+        .totals .grand .val {
+            font-size: 1rem;
+            color: var(--accent);
+        }
+
+        @media (max-width:720px) {
+            .v-head {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .v-head2 {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .close-card {
+                grid-column: 2;
+                justify-self: end;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+        <div class="page-header">
+            <div>
+                <h1>Voucher Entry — Stock Manager</h1>
+                <p>Card redesign, Busy-style header + dual-unit item rows</p>
+                <div class="legend">
+                    <span><i class="p"></i> Primary unit (e.g. pcs)</span>
+                    <span><i class="s"></i> Secondary unit (e.g. kg)</span>
+                </div>
+            </div>
+            <button class="ghost-btn" id="addCardBtn">+ New Voucher Card</button>
+        </div>
+
+        <div class="cards-wrap" id="cardsWrap"></div>
+    </div>
+
+    <script>
+        (function () {
+            var cardsWrap = document.getElementById('cardsWrap');
+            var blockSeq = 0;
+
+            var TXN_TYPES = [
+                { v: 'In', c: '#1f7a4d' },
+                { v: 'Out', c: '#b3382a' },
+                { v: 'Direct', c: '#2563eb' },
+                { v: 'Return', c: '#b8781a' },
+                { v: 'Repair', c: '#c0298e' },
+                { v: 'Stock Adjust', c: '#7c3aed' }
+            ];
+
+            function fmtMoney(n) {
+                return (isNaN(n) ? 0 : n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            function fmtQty(n) {
+                return (isNaN(n) ? 0 : n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+            }
+            function dayShort(dateStr) {
+                if (!dateStr) return '';
+                var d = new Date(dateStr + 'T00:00:00');
+                if (isNaN(d)) return '';
+                return '(' + d.toLocaleDateString('en-US', { weekday: 'short' }) + ')';
+            }
+
+            function makeTypeOptions(select) {
+                TXN_TYPES.forEach(function (t) {
+                    var o = document.createElement('option');
+                    o.value = t.v; o.textContent = t.v;
+                    select.appendChild(o);
+                });
+            }
+            function typeColor(v) {
+                var m = TXN_TYPES.find(function (t) { return t.v === v; });
+                return m ? m.c : '#888';
+            }
+
+            function createCard(demo) {
+                var today = new Date().toISOString().slice(0, 10);
+
+                var card = document.createElement('div');
+                card.className = 'voucher';
+                card.innerHTML =
+                    '<div class="v-head">' +
+                    '<div class="field"><label>Date</label>' +
+                    '<div style="display:flex;align-items:center;gap:6px;">' +
+                    '<input type="date" class="date-input" value="' + today + '" />' +
+                    '<span class="day-tag day-out"></span>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="field type-field"><label>Type</label>' +
+                    '<div style="display:flex;align-items:center;">' +
+                    '<span class="type-dot" style="background:' + typeColor('In') + '"></span>' +
+                    '<select class="type-select"></select>' +
+                    '</div>' +
+                    '</div>' +
+                    '<button class="close-card" title="Remove card">&times;</button>' +
+                    '</div>' +
+                    '<div class="v-head2">' +
+                    '<div class="field"><label>Mat. Centre / Site</label><input placeholder="Site or store" class="site-input" /></div>' +
+                    '<div class="field"><label>Party / Vendor</label><input placeholder="Vendor name" class="vendor-input" /></div>' +
+                    '<div class="field"><label>Ref / Invoice No.</label><input placeholder="INV-000" class="invoice-input" /></div>' +
+                    '</div>' +
+                    '<div class="table-scroll">' +
+                    '<table class="voucher-table">' +
+                    '<thead><tr>' +
+                    '<th style="width:34px">S.N.</th>' +
+                    '<th style="min-width:240px">Item</th>' +
+                    '<th style="width:70px">Qty</th>' +
+                    '<th style="width:64px">Unit</th>' +
+                    '<th style="width:76px">Rate</th>' +
+                    '<th style="width:96px">Amount</th>' +
+                    '<th style="width:64px"></th>' +
+                    '<th style="width:26px"></th>' +
+                    '</tr></thead>' +
+                    '<tbody class="tbody"></tbody>' +
+                    '</table>' +
+                    '</div>' +
+                    '<div class="add-row-strip"><button class="add-row-btn">+ Add Item Row</button></div>' +
+                    '<div class="v-foot">' +
+                    '<div class="foot-left">' +
+                    '<label class="flat-btn" style="cursor:pointer;">📎 Upload Bill<input type="file" style="display:none" class="file-input"/></label>' +
+                    '<button class="flat-btn ai-btn">🤖 AI Auto-Fill</button>' +
+                    '</div>' +
+                    '<div class="totals">' +
+                    '<div class="line"><span class="lbl">Qty Total</span><span class="val qty-total">0</span></div>' +
+                    '<div class="line"><span class="lbl">Alt. Qty Total</span><span class="val alt-total">0</span></div>' +
+                    '<div class="line grand"><span class="lbl">Grand Total</span><span class="val grand-total">₹0.00</span></div>' +
+                    '</div>' +
+                    '</div>';
+
+                var typeSelect = card.querySelector('.type-select');
+                makeTypeOptions(typeSelect);
+                typeSelect.addEventListener('change', function () {
+                    card.querySelector('.type-dot').style.background = typeColor(typeSelect.value);
+                });
+
+                var dateInput = card.querySelector('.date-input');
+                card.querySelector('.day-out').textContent = dayShort(dateInput.value);
+                dateInput.addEventListener('change', function () {
+                    card.querySelector('.day-out').textContent = dayShort(dateInput.value);
+                });
+
+                card.querySelector('.close-card').addEventListener('click', function () {
+                    card.remove();
+                });
+
+                card.querySelector('.add-row-btn').addEventListener('click', function () {
+                    addItemBlock(card, {});
+                });
+
+                card.querySelector('.file-input').addEventListener('change', function (e) {
+                    var f = e.target.files[0];
+                    var strip = card.querySelector('.foot-left');
+                    var label = strip.querySelector('label.flat-btn');
+                    if (f) {
+                        label.style.display = 'none';
+                        var tag = document.createElement('span');
+                        tag.className = 'file-tag';
+                        tag.innerHTML = '📄 ' + f.name.slice(0, 20) + ' <span class="rm">&times;</span>';
+                        tag.querySelector('.rm').addEventListener('click', function () {
+                            tag.remove();
+                            label.style.display = '';
+                            card.querySelector('.file-input').value = '';
+                        });
+                        strip.insertBefore(tag, strip.children[1]);
+                    }
+                });
+
+                (demo || [{ item: '1x1 Alu. Angle Local Cora Anodised', detail: '', qty1: 20, unit1: 'pcs', rate1: 80, qty2: 40, unit2: 'kg', rate2: 40, stock1: 2, stock2: 4.5, category: 'MT.General Tool' },
+                { item: '1x1 Alu. Angle Local Cora Anodised', detail: '', qty1: 20, unit1: 'pcs', rate1: 80, qty2: 40, unit2: 'kg', rate2: 40, stock1: 2, stock2: 4.5, category: 'MT.General Tool' },
+                { item: '1x1 Alu. Angle Local Cora Anodised', detail: '', qty1: 20, unit1: 'pcs', rate1: 80, qty2: 40, unit2: 'kg', rate2: 40, stock1: 2, stock2: 4.5, category: 'MT.General Tool' },
+                {}]).forEach(function (row) {
+                    addItemBlock(card, row);
+                });
+
+                recalcCard(card);
+                return card;
+            }
+
+            function addItemBlock(card, data) {
+                data = data || {};
+                var tbody = card.querySelector('.tbody');
+                var bid = 'b' + (++blockSeq);
+
+                var row1 = document.createElement('tr');
+                row1.className = 'row1';
+                row1.dataset.block = bid;
+                row1.innerHTML =
+                    '<td class="sn-cell" rowspan="2"></td>' +
+                    '<td class="item-cell" rowspan="2">' +
+                    '<input class="cell-input item-name" placeholder="Search item..." value="' + (data.item || '') + '">' +
+                    '<div class="item-sub-row">' +
+                    '<input class="cell-input item-detail" placeholder="Detail..." value="' + (data.detail || '') + '">' +
+                    '<div class="item-badges">' +
+                    '<span class="item-badge stock1">Current: <span class="stock1-val">' + fmtQty(data.stock1 != null ? data.stock1 : 0) + '</span> ' + (data.unit1 || 'pcs') + '</span>' +
+                    '<span class="item-badge stock2">Current: <span class="stock2-val">' + fmtQty(data.stock2 != null ? data.stock2 : 0) + '</span> ' + (data.unit2 || 'kg') + '</span>' +
+                    '<span class="item-badge cat">' + (data.category || 'MT.General Tool') + '</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '</td>' +
+                    '<td class="qty-cell"><input class="cell-input num qty1" type="number" min="0" placeholder="0" value="' + (data.qty1 != null ? data.qty1 : '') + '"></td>' +
+                    '<td><input class="cell-input unit1" placeholder="pcs" value="' + (data.unit1 || '') + '"></td>' +
+                    '<td><input class="cell-input num rate1" type="number" min="0" placeholder="0" value="' + (data.rate1 != null ? data.rate1 : '') + '"></td>' +
+                    '<td class="amt-cell"><input class="cell-input amt1" readonly tabindex="-1" value="0.00"></td>' +
+                    '<td rowspan="2" style="text-align:center;"><button class="toggle-unit-btn active" title="Toggle secondary unit">2 units</button></td>' +
+                    '<td class="action-cell" rowspan="2"><button class="row-btn" title="Remove item">&times;</button></td>';
+
+                var row2 = document.createElement('tr');
+                row2.className = 'row2';
+                row2.dataset.block = bid;
+                row2.innerHTML =
+                    '<td class="qty-cell"><input class="cell-input num qty2" type="number" min="0" placeholder="0" value="' + (data.qty2 != null ? data.qty2 : '') + '"></td>' +
+                    '<td><input class="cell-input unit2" placeholder="kg" value="' + (data.unit2 || '') + '"></td>' +
+                    '<td><input class="cell-input num rate2" type="number" min="0" placeholder="0" value="' + (data.rate2 != null ? data.rate2 : '') + '"></td>' +
+                    '<td class="amt-cell"><input class="cell-input amt2" readonly tabindex="-1" value="0.00"></td>';
+
+                row1.classList.add('item-block-end-marker');
+                row1.dataset.stock1 = (data.stock1 != null ? data.stock1 : 0);
+                row1.dataset.stock2 = (data.stock2 != null ? data.stock2 : 0);
+                tbody.appendChild(row1);
+                tbody.appendChild(row2);
+                row2.classList.add('item-block-end');
+
+                ['.qty1', '.rate1'].forEach(function (sel) {
+                    row1.querySelector(sel).addEventListener('input', function () { recalcRow(row1, row2); recalcCard(card); updateCurrentQty(row1); });
+                });
+                ['.qty2', '.rate2'].forEach(function (sel) {
+                    row2.querySelector(sel).addEventListener('input', function () { recalcRow(row1, row2); recalcCard(card); updateCurrentQty(row1); });
+                });
+
+                row1.querySelector('.unit1').addEventListener('input', function () { updateCurrentQty(row1); });
+                row2.querySelector('.unit2').addEventListener('input', function () { updateCurrentQty(row1); });
+
+                row1.querySelector('.row-btn').addEventListener('click', function () {
+                    row1.remove(); row2.remove(); renumber(card); recalcCard(card);
+                });
+
+                row1.querySelector('.toggle-unit-btn').addEventListener('click', function () {
+                    var btn = row1.querySelector('.toggle-unit-btn');
+                    var on = btn.classList.toggle('active');
+                    btn.textContent = on ? '2 units' : '1 unit';
+                    row2.querySelectorAll('input').forEach(function (inp) { inp.disabled = !on; });
+                    if (!on) { row2.querySelector('.qty2').value = ''; row2.querySelector('.rate2').value = ''; }
+                    recalcRow(row1, row2); recalcCard(card);
+                });
+
+                recalcRow(row1, row2);
+                renumber(card);
+            }
+
+            function updateCurrentQty(row1) {
+                var block = row1.dataset.block;
+                var card = row1.closest('.voucher');
+                var row2 = card ? card.querySelector('tr.row2[data-block="' + block + '"]') : null;
+
+                var stock1 = parseFloat(row1.dataset.stock1) || 0;
+                var stock2 = parseFloat(row1.dataset.stock2) || 0;
+                var unit1 = row1.querySelector('.unit1') ? row1.querySelector('.unit1').value || 'pcs' : 'pcs';
+                var unit2 = row2 && row2.querySelector('.unit2') ? row2.querySelector('.unit2').value || 'kg' : 'kg';
+
+                var badge1 = row1.querySelector('.stock1-val');
+                var badge2 = row1.querySelector('.stock2-val');
+                var badgeUnit1 = row1.querySelector('.stock1');
+                var badgeUnit2 = row1.querySelector('.stock2');
+
+                if (badge1) badge1.textContent = fmtQty(stock1);
+                if (badge2) badge2.textContent = fmtQty(stock2);
+                // Update the unit label text after the span (text node)
+                if (badgeUnit1) {
+                    var span1 = badgeUnit1.querySelector('.stock1-val');
+                    if (span1 && span1.nextSibling) span1.nextSibling.textContent = ' ' + unit1;
+                    else if (span1) badgeUnit1.innerHTML = 'Current: <span class="stock1-val">' + fmtQty(stock1) + '</span> ' + unit1;
+                }
+                if (badgeUnit2) {
+                    var span2 = badgeUnit2.querySelector('.stock2-val');
+                    if (span2 && span2.nextSibling) span2.nextSibling.textContent = ' ' + unit2;
+                    else if (span2) badgeUnit2.innerHTML = 'Current: <span class="stock2-val">' + fmtQty(stock2) + '</span> ' + unit2;
+                }
+            }
+
+            function recalcRow(row1, row2) {
+                var q1 = parseFloat(row1.querySelector('.qty1').value) || 0;
+                var r1 = parseFloat(row1.querySelector('.rate1').value) || 0;
+                row1.querySelector('.amt1').value = fmtMoney(q1 * r1);
+
+                var disabled = row2.querySelector('.qty2').disabled;
+                var q2 = disabled ? 0 : (parseFloat(row2.querySelector('.qty2').value) || 0);
+                var r2 = disabled ? 0 : (parseFloat(row2.querySelector('.rate2').value) || 0);
+                row2.querySelector('.amt2').value = fmtMoney(q2 * r2);
+            }
+
+            function renumber(card) {
+                var blocks = card.querySelectorAll('tr.row1');
+                blocks.forEach(function (r, i) {
+                    r.querySelector('.sn-cell').textContent = i + 1;
+                });
+            }
+
+            function recalcCard(card) {
+                var qtyTotal = 0, altTotal = 0, amountTotal = 0;
+                card.querySelectorAll('tr.row1').forEach(function (row1) {
+                    var block = row1.dataset.block;
+                    var row2 = card.querySelector('tr.row2[data-block="' + block + '"]');
+                    qtyTotal += parseFloat(row1.querySelector('.qty1').value) || 0;
+                    amountTotal += parseFloat((row1.querySelector('.amt1').value || '0').replace(/,/g, '')) || 0;
+                    if (!row2.querySelector('.qty2').disabled) {
+                        altTotal += parseFloat(row2.querySelector('.qty2').value) || 0;
+                        amountTotal += parseFloat((row2.querySelector('.amt2').value || '0').replace(/,/g, '')) || 0;
+                    }
+                });
+
+                card.querySelector('.qty-total').textContent = fmtQty(qtyTotal);
+                card.querySelector('.alt-total').textContent = fmtQty(altTotal);
+                card.querySelector('.grand-total').textContent = '₹' + fmtMoney(amountTotal);
+            }
+
+            document.getElementById('addCardBtn').addEventListener('click', function () {
+                var c = createCard([{}]);
+                cardsWrap.appendChild(c);
+                c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            // Initial demo card
+            cardsWrap.appendChild(createCard());
+        })();
+    </script>
+</body>
+
+</html>

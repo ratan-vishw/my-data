@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    h1 {
+      text-align: center;
+      font-family: arial;
+    }
+    #box {
+      background-color: cyan;
+      height: 400px;
+      width: 400px;
+      margin: auto;
+    }
+    #box #box2 {
+      background-color: lightpink;
+      position: relative;
+      height: 100px;
+      width: 100px;
+      animation: mybox 6s infinite;
+      animation-direction: reverse;
+      animation-fill-mode:forwards; 
+    }
+    @keyframes mybox {
+      0% {background-color: #f72585; left:0; top: 0;}
+      25% {background-color: #7209b7; left: 300px; top: 0;}
+      50% {background-color: #3a0ca3; left: 300px; top: 300px;}
+      75% {background-color: #4361ee; left: 0px; top: 300px;}
+      100% {background-color: #4cc9f0; left: 0px; top: 0px;}
+    }
+  </style>
+</head>
+<body>
+  <h1>Animation With Alternate Direction</h1>
+  <div id="box">
+    <div id="box2"></div>
+  </div>
+</body>
+</html>

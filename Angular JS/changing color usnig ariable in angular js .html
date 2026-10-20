@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="ang.js"></script>
+</head>
+<body ng-app="colorChanger" ng-controller="colorController">
+  <input ng-style="{'background-color': mycol}" ng-model="mycol">
+  <script>
+    angular.module('colorChanger', []).controller("colorController", function($scope){
+      $scope.mycol = "yellow";
+    });
+  </script>
+</body>
+</html>

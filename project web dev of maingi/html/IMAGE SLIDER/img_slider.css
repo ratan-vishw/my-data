@@ -1,0 +1,66 @@
+.mid_img {
+    display: flex;
+    justify-content: center; /* Align the slider in the center */
+    position: relative; /* Ensure relative positioning for navigation buttons */
+}
+
+.mid_img .slider {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    height: 200px;
+    margin: auto;
+    overflow: hidden;
+}
+
+.mid_img .slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.mid_img .slide {
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
+.mid_img .slide img {
+    width: 100%;
+    height: 50%;
+    object-fit: cover; /* Ensures the image covers the entire slide without distortion */
+
+}
+
+.mid_img button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1;
+    outline: none; /* Remove button outline */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.mid_img button:hover {
+    background-color: rgba(255, 255, 255, 1); /* Brighten button on hover */
+}
+
+.mid_img .prev {
+    left: 10px;
+}
+
+.mid_img .next {
+    right: 10px;
+}
+
+@media (max-width: 500px) {
+    .mid_img .slider {
+        max-width: 100%; /* Ensure responsiveness on smaller devices */
+        height: 150px;
+    }
+    .mid_img .slide {
+        height: 150px;
+    }
+}

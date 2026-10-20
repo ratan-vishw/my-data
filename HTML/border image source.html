@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Example 1: Using an Image as a Border */
+    .image-border {
+      width: 300px;
+      height: 200px;
+      border: 30px solid transparent;
+      border-image-source: url('https://via.placeholder.com/150');
+      border-image-slice: 30;
+      border-image-repeat: round;
+    }
+
+    /* Example 2: Using a Gradient as a Border */
+    .gradient-border {
+      width: 300px;
+      height: 200px;
+      border: 20px solid transparent;
+      border-image-source: linear-gradient(to right, red, yellow, green, blue);
+      border-image-slice: 1;
+    }
+
+    /* Example 3: Complete Shorthand Border Image Setup */
+    .shorthand-border {
+      width: 300px;
+      height: 200px;
+      border: 30px solid transparent;
+      border-image: url('https://via.placeholder.com/150') 30 stretch;
+    }
+  </style>
+  <title>Border Image Example</title>
+</head>
+<body>
+
+  <div class="image-border">Image Border</div>
+  <br>
+  <div class="gradient-border">Gradient Border</div>
+  <br>
+  <div class="shorthand-border">Shorthand Border</div>
+
+</body>
+</html>

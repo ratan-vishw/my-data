@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="ang.js"></script>
+</head>
+<body ng-app>
+  <p>Have a idia of your intrest rate. </p>
+  <div>
+    <input ng-model="amount" placeholder="Enter Amount">
+
+    <input ng-model="period" placeholder="month" >
+    <br>
+    here is the intrest by time period: {{(amount * period * 10) / 100}}
+  </div>
+
+</body>
+</html>

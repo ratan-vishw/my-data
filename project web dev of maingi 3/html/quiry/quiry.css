@@ -1,0 +1,65 @@
+
+.quiry_container {
+    margin: 0;
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.quiry_container h2 {
+    text-align: center;
+    color: #333;
+}
+
+.quiry_container .form-group {
+    margin-bottom: 15px;
+}
+
+.quiry_container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="tel"],
+.quiry_container textarea {
+    width: 95%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.quiry_container textarea {
+    resize: vertical;
+}
+
+.quiry_container .form-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.quiry_container button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.quiry_container button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+}
+
+.quiry_container button[type="reset"] {
+    background-color: #dc3545;
+    color: white;
+}
+
+.quiry_container button:hover {
+    opacity: 0.8;
+}

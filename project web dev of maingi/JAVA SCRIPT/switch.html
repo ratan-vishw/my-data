@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Switch Case Color Change</title>
+  <script>
+    function switchcase(value) {
+      let color;
+      switch (value.toLowerCase()) {
+        case "red":
+          color = "red";
+          break;
+        case "green":
+          color = "green";
+          break;
+        case "blue":
+          color = "blue";
+          break;
+        default:
+          color = "black";
+      }
+      return color;
+    }
+
+    function showResult() {
+      const input = document.getElementById("inputValue").value;
+      const color = switchcase(input);
+      const resultElement = document.getElementById("result");
+      resultElement.innerText = `Color is ${color}`;
+      resultElement.style.color = color;
+    }
+  </script>
+</head>
+<body>
+  <h2>Learn Switch Case</h2>
+  <input type="text" id="inputValue" placeholder="Enter a color (red, green, blue)">
+  <button onclick="showResult()">Show Result</button>
+  <p id="result"></p>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button Hover Example</title>
+  <style>
+    button::before {
+      content: 'X';
+      color: #ff0000;
+    }
+  </style>
+</head>
+<body>
+  <button id="myButton">Hover over me</button>
+
+  <script>
+    document.getElementById('myButton').addEventListener('mouseover', function() {
+      this.textContent = 'Hovered!';
+    });
+  </script>
+</body>
+</html>

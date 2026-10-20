@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    div:only-child {
+      background-color: lightblue;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div>This div is the only child of body and will have the background color.
+    <div>Another div</div>
+  </div> <!-- Will be selected -->
+  <div>Another div</div>
+  <div>Another div</div> <!-- Not selected, because it's not the only child anymore -->
+</body>
+</html>

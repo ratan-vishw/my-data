@@ -1,0 +1,4370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <base target="_top">
+    <title>Stock Manager</title>
+    <meta name="description"
+        content="Premium inventory stock management system with multi-card transactions, AI bill extraction, and real-time stock tracking.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        navy: { DEFAULT: '#0f172a', mid: '#1e293b', light: '#334155' },
+                        brand: { DEFAULT: '#6366f1', light: '#818cf8', dark: '#4f46e5', glow: 'rgba(99,102,241,0.18)' },
+                        emerald: { DEFAULT: '#10b981', bg: '#d1fae5' },
+                        amber: { DEFAULT: '#f59e0b', bg: '#fef3c7' },
+                        rose: { DEFAULT: '#f43f5e', bg: '#ffe4e6' },
+                        violet: { DEFAULT: '#7c3aed', light: '#a78bfa', bg: '#f5f3ff', glow: 'rgba(124,58,237,0.18)' },
+                        cyan: { DEFAULT: '#06b6d4', bg: '#ecfeff' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ═══════════════════════════════════════════════════════════════
+       CORE DESIGN SYSTEM
+       ═══════════════════════════════════════════════════════════════ */
+        :root {
+            --font-mono: 'JetBrains Mono', monospace;
+            --shadow-card: 0 4px 24px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.06);
+            --shadow-card-hover: 0 8px 32px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.08);
+            --shadow-glow-brand: 0 0 20px rgba(99, 102, 241, 0.15);
+            --shadow-glow-violet: 0 0 20px rgba(124, 58, 237, 0.2);
+            --glass-bg: rgba(255, 255, 255, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.35);
+            --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* ── Busy Style variables ── */
+            --cyan-1: #cdeeed;
+            --cyan-2: #e6f7f6;
+            --border: #c3cfcf;
+            --border-strong: #93a6a6;
+            --ink: #17201f;
+            --muted: #5c6b6b;
+            --accent: #0c6b63;
+            --accent-ink: #ffffff;
+            --primary-row: #0c6b63;
+            --secondary-row: #b8781a;
+            --danger: #b3382a;
+            --success: #1f7a4d;
+            --page-bg: #e9eeee;
+            --card-bg: #ffffff;
+            --thead-bg: #eef3f3;
+            --zebra: #f7faf9;
+            --radius: 6px;
+        }
+
+        .dark {
+            --glass-bg: rgba(30, 41, 59, 0.72);
+            --glass-border: rgba(51, 65, 85, 0.35);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+            --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
+
+            /* ── Busy Style variables (Dark Mode) ── */
+            --cyan-1: #112d2b;
+            --cyan-2: #163634;
+            --border: #2c4240;
+            --border-strong: #3d5e5b;
+            --ink: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #14b8a6;
+            --accent-ink: #0f172a;
+            --primary-row: #14b8a6;
+            --secondary-row: #fbbf24;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --page-bg: #0f172a;
+            --card-bg: #1e293b;
+            --thead-bg: #0f172a;
+            --zebra: #1e293b;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            min-height: 100vh;
+            background: #f1f5f9;
+            background-image:
+                radial-gradient(circle at 15% 0%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 85% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            transition: background 0.4s ease;
+            padding-bottom: 120px;
+        }
+
+        .dark body,
+        body.dark-mode {
+            background: #0f172a;
+            background-image:
+                radial-gradient(circle at 15% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 100%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+            color: #e2e8f0;
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 3px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        /* ── App Bar ── */
+        .app-bar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            box-shadow: 0 2px 20px rgba(15, 23, 42, 0.35);
+            display: flex;
+            align-items: center;
+            height: 52px;
+            gap: 6px;
+        }
+
+        .app-bar-brand {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #818cf8;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-bar-brand::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.7);
+            }
+        }
+
+        .bar-btn {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bar-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .bar-btn.danger {
+            color: #fb7185;
+            border-color: rgba(251, 113, 133, 0.25);
+        }
+
+        .bar-btn.danger:hover {
+            background: rgba(251, 113, 133, 0.1);
+            color: #fda4af;
+        }
+
+        .theme-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        /* ── Cards Container ── */
+        .cards-container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ── Transaction Card ── */
+        .txn-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .txn-card:hover {
+            box-shadow: var(--shadow-card-hover);
+        }
+
+        .txn-card.new-item-glow {
+            border-color: rgba(124, 58, 237, 0.4);
+            box-shadow: var(--shadow-glow-violet);
+        }
+
+        .card-header {
+            background: rgba(99, 102, 241, 0.04);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .dark .card-header {
+            background: rgba(99, 102, 241, 0.06);
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .card-num {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+            min-width: 26px;
+            text-align: center;
+        }
+
+        .card-num.new-item {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        }
+
+        .card-close {
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .card-close:hover {
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+        }
+
+        /* ── Card Header Inputs ── */
+        .header-input {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid #e2e8f0;
+            border-radius: 7px;
+            padding: 6px 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            color: #0f172a;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .header-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .header-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .dark .header-input {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
+        .dark .header-input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+        }
+
+        .header-input.violet-glow {
+            border-color: rgba(124, 58, 237, 0.5) !important;
+            background: rgba(124, 58, 237, 0.06) !important;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12) !important;
+        }
+
+        .header-input.w-date {
+            width: 155px;
+        }
+
+        .header-input.w-site {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .header-input.w-invoice {
+            width: 130px;
+        }
+
+        /* ── Excel-like Table ── */
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+        }
+
+        .excel-table th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 6px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+        }
+
+        .dark .excel-table th {
+            background: rgba(15, 23, 42, 0.5);
+            color: #94a3b8;
+            border-bottom-color: #334155;
+        }
+
+        .excel-table td {
+            padding: 4px 4px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .dark .excel-table td {
+            border-bottom-color: rgba(51, 65, 85, 0.4);
+        }
+
+        .cell-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            padding: 5px 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            color: #0f172a;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .cell-input:hover {
+            border-color: #e2e8f0;
+        }
+
+        .cell-input:focus {
+            background: #fff;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        }
+
+        .dark .cell-input {
+            color: #e2e8f0;
+        }
+
+        .dark .cell-input:hover {
+            border-color: #334155;
+        }
+
+        .dark .cell-input:focus {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: #818cf8;
+        }
+
+        .cell-input.violet-glow {
+            border-color: rgba(124, 58, 237, 0.5) !important;
+            background: rgba(124, 58, 237, 0.06) !important;
+        }
+
+        .cell-input.readonly {
+            color: #64748b;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+        }
+
+        .dark .cell-input.readonly {
+            color: #94a3b8;
+        }
+
+        .cell-input.item-name {
+            min-width: 180px;
+        }
+
+        /* ── Transaction Type Selector ── */
+        .txn-type-row {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            padding: 8px 16px;
+        }
+
+        .txn-type-btn {
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #64748b;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.02em;
+        }
+
+        .txn-type-btn:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .txn-type-btn.active-in {
+            background: #d1fae5;
+            color: #059669;
+            border-color: #10b981;
+        }
+
+        .txn-type-btn.active-out {
+            background: #ffe4e6;
+            color: #e11d48;
+            border-color: #f43f5e;
+        }
+
+        .txn-type-btn.active-direct {
+            background: #dbeafe;
+            color: #2563eb;
+            border-color: #3b82f6;
+        }
+
+        .txn-type-btn.active-return {
+            background: #fef3c7;
+            color: #d97706;
+            border-color: #f59e0b;
+        }
+
+        .txn-type-btn.active-repair {
+            background: #fce7f3;
+            color: #db2777;
+            border-color: #ec4899;
+        }
+
+        .txn-type-btn.active-adjust {
+            background: #f5f3ff;
+            color: #7c3aed;
+            border-color: #8b5cf6;
+        }
+
+        .dark .txn-type-btn {
+            background: rgba(30, 41, 59, 0.5);
+            border-color: #334155;
+            color: #94a3b8;
+        }
+
+        .dark .txn-type-btn.active-in {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .dark .txn-type-btn.active-out {
+            background: rgba(244, 63, 94, 0.15);
+            color: #fb7185;
+            border-color: rgba(244, 63, 94, 0.4);
+        }
+
+        .dark .txn-type-btn.active-direct {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .dark .txn-type-btn.active-return {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        .dark .txn-type-btn.active-repair {
+            background: rgba(236, 72, 153, 0.15);
+            color: #f472b6;
+            border-color: rgba(236, 72, 153, 0.4);
+        }
+
+        .dark .txn-type-btn.active-adjust {
+            background: rgba(124, 58, 237, 0.15);
+            color: #a78bfa;
+            border-color: rgba(124, 58, 237, 0.4);
+        }
+
+        /* ── Card Footer ── */
+        .card-footer {
+            padding: 10px 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .dark .card-footer {
+            border-top-color: rgba(255, 255, 255, 0.04);
+        }
+
+        .upload-btn,
+        .ai-btn {
+            padding: 5px 12px;
+            border-radius: 7px;
+            border: 1px dashed #cbd5e1;
+            background: transparent;
+            color: #64748b;
+            font-size: 0.72rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .upload-btn:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+            background: rgba(99, 102, 241, 0.04);
+        }
+
+        .ai-btn {
+            border-style: solid;
+            border-color: rgba(124, 58, 237, 0.3);
+            color: #7c3aed;
+        }
+
+        .ai-btn:hover {
+            background: rgba(124, 58, 237, 0.06);
+            border-color: #7c3aed;
+        }
+
+        .dark .upload-btn {
+            border-color: #475569;
+            color: #94a3b8;
+        }
+
+        .dark .ai-btn {
+            border-color: rgba(167, 139, 250, 0.3);
+            color: #a78bfa;
+        }
+
+        .file-tag {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            padding: 3px 8px;
+            font-size: 0.68rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .file-tag .remove-file {
+            cursor: pointer;
+            color: #f43f5e;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .dark .file-tag {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: #334155;
+            color: #94a3b8;
+        }
+
+        /* ── Create New Item Button ── */
+        .create-master-btn {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(124, 58, 237, 0.05));
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            color: #7c3aed;
+            padding: 4px 12px;
+            border-radius: 7px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            animation: glow-pulse 2s infinite;
+        }
+
+        .create-master-btn:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(124, 58, 237, 0.1));
+            border-color: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        @keyframes glow-pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(124, 58, 237, 0.15);
+            }
+
+            50% {
+                box-shadow: 0 0 16px rgba(124, 58, 237, 0.3);
+            }
+        }
+
+        /* ── Autocomplete Dropdown ── */
+        .ac-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.14);
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 100;
+            margin-top: 4px;
+        }
+
+        .dark .ac-dropdown {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .ac-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: background 0.1s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ac-item:hover {
+            background: #f1f5f9;
+        }
+
+        .dark .ac-item:hover {
+            background: #334155;
+        }
+
+        .ac-item .ac-stock {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .dark .ac-item .ac-stock {
+            color: #94a3b8;
+            background: rgba(51, 65, 85, 0.5);
+        }
+
+        /* ── Item Search Suggestions Dropdown (Right side of Input) ── */
+        .item-dropdown-right {
+            position: absolute !important;
+            top: 0 !important;
+            left: 100% !important;
+            width: 380px !important;
+            max-height: 380px !important;
+            background: #ffffff !important;
+            border: 1px solid #c3cfcf !important;
+            border-radius: 6px !important;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15) !important;
+            z-index: 9999 !important;
+            margin-left: 8px !important;
+            overflow-y: auto !important;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInSimple 0.15s ease-out;
+        }
+
+        .dark .item-dropdown-right {
+            background: #1e293b !important;
+            border-color: #3d5e5b !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        @keyframes fadeInSimple {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .item-dropdown-right .sp-item {
+            display: flex;
+            flex-direction: column;
+            padding: 8px 12px;
+            border-bottom: 1px dashed #e2e8f0;
+            cursor: pointer;
+            transition: background 0.12s;
+            gap: 2px;
+            text-align: left;
+        }
+
+        .dark .item-dropdown-right .sp-item {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .item-dropdown-right .sp-item:hover {
+            background: #f1f5f9;
+        }
+
+        .dark .item-dropdown-right .sp-item:hover {
+            background: #2a3a4f;
+        }
+
+        .item-dropdown-right .sp-item-name {
+            font-weight: 700;
+            font-size: 0.76rem;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+
+        .dark .item-dropdown-right .sp-item-name {
+            color: #f1f5f9;
+        }
+
+        .item-dropdown-right .sp-item-meta {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-family: var(--font-mono);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .dark .item-dropdown-right .sp-item-meta {
+            color: #94a3b8;
+        }
+
+        .item-dropdown-right .sp-item-meta .sp-tag {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 0 4px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+        }
+
+        .dark .item-dropdown-right .sp-item-meta .sp-tag {
+            background: rgba(51, 65, 85, 0.5);
+            border-color: #334155;
+        }
+
+        .item-dropdown-right .sp-empty {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 0.78rem;
+        }
+
+        /* ── Bottom Action Bar ── */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 400;
+            box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08);
+        }
+
+        .primary-btn {
+            padding: 8px 24px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.01em;
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.25);
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .dark .btn-submit {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+
+        .btn-add-card {
+            background: #fff;
+            color: #6366f1;
+            border: 1.5px solid #6366f1;
+        }
+
+        .btn-add-card:hover:not(:disabled) {
+            background: #f5f3ff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.15);
+        }
+
+        .dark .btn-add-card {
+            background: rgba(30, 41, 59, 0.8);
+            color: #818cf8;
+            border-color: #818cf8;
+        }
+
+        .card-count-badge {
+            background: #6366f1;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+        }
+
+        /* ── Loading Overlay ── */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .dark .loading-overlay {
+            background: rgba(15, 23, 42, 0.88);
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .dark .spinner {
+            border-color: #334155;
+            border-top-color: #818cf8;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 12px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .dark .loading-text {
+            color: #94a3b8;
+        }
+
+        /* ── Modal ── */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+            width: 90%;
+            max-width: 560px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalIn 0.25s ease-out;
+        }
+
+        .dark .modal-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dark .modal-header {
+            border-bottom-color: #334155;
+            color: #f1f5f9;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: #f43f5e;
+        }
+
+        .modal-body {
+            padding: 16px 20px;
+        }
+
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .dark .modal-footer {
+            border-top-color: #334155;
+        }
+
+        .modal-btn {
+            padding: 7px 18px;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #64748b;
+        }
+
+        .modal-btn:hover {
+            background: #f8fafc;
+        }
+
+        .modal-btn.primary {
+            background: #0f172a;
+            color: #fff;
+            border-color: #0f172a;
+        }
+
+        .modal-btn.primary:hover {
+            background: #1e293b;
+        }
+
+        .dark .modal-btn {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        .dark .modal-btn.primary {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+
+        /* ── Form Groups (Modals) ── */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .dark .form-label {
+            color: #94a3b8;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            background: #fff;
+            color: #0f172a;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .dark .form-input {
+            background: rgba(15, 23, 42, 0.5);
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        /* ── Keyboard Shortcut Keys ── */
+        .kbd {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 500;
+            color: #374151;
+            box-shadow: 0 1px 0 #d1d5db;
+        }
+
+        .dark .kbd {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+            box-shadow: 0 1px 0 #475569;
+        }
+
+        /* ── History Table ── */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.72rem;
+        }
+
+        .history-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 6px 8px;
+            text-align: left;
+            color: #64748b;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .dark .history-table th {
+            background: rgba(15, 23, 42, 0.5);
+            color: #94a3b8;
+            border-bottom-color: #334155;
+        }
+
+        .history-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+        }
+
+        .dark .history-table td {
+            border-bottom-color: #1e293b;
+            color: #e2e8f0;
+        }
+
+        /* ── Relative wrapper for autocomplete ── */
+        .ac-wrap {
+            position: relative;
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .empty-state-sub {
+            font-size: 0.78rem;
+            margin-top: 6px;
+        }
+
+        /* ── Stock badges ── */
+        .stock-before {
+            color: #64748b;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+        }
+
+        .stock-after {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .stock-after.positive {
+            color: #10b981;
+        }
+
+        .stock-after.negative {
+            color: #f43f5e;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .app-bar {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 8px 12px;
+                gap: 4px;
+            }
+
+            .bar-btn {
+                font-size: 0.68rem;
+                padding: 4px 8px;
+            }
+
+            .card-header {
+                flex-direction: column;
+            }
+
+            .header-input {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+
+            .excel-table {
+                font-size: 0.7rem;
+            }
+
+            .cell-input {
+                font-size: 0.7rem;
+                padding: 4px 5px;
+            }
+        }
+
+        /* ── Busy Style Voucher Redesign ── */
+        .txn-card.voucher-busy {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-strong) !important;
+            border-radius: var(--radius) !important;
+            box-shadow: 0 1px 3px rgba(15, 30, 30, .08) !important;
+            overflow: visible !important;
+        }
+
+        .txn-card.dropdown-active {
+            position: relative;
+            z-index: 10;
+        }
+
+        .v-head {
+            background: var(--cyan-1);
+            padding: 10px 14px 4px;
+            display: flex;
+            align-items: flex-end;
+            gap: 14px;
+            flex-wrap: wrap;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .field label {
+            display: block;
+            font-size: .62rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 3px;
+            text-align: left;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            background: var(--card-bg);
+            padding: 5px 7px;
+            font-size: .8rem;
+            color: var(--ink);
+            font-family: inherit;
+            outline: none;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(12, 107, 99, .12);
+        }
+
+        .day-tag {
+            font-size: .68rem;
+            color: var(--muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .close-card {
+            background: transparent;
+            border: none;
+            color: #7a8888;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            justify-self: end;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-card:hover {
+            background: rgba(179, 56, 42, .1);
+            color: var(--danger);
+        }
+
+        .type-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .type-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Table */
+        .table-scroll {
+            overflow: visible;
+        }
+
+        table.voucher-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        .voucher-table thead th {
+            background: var(--thead-bg);
+            color: var(--muted);
+            font-size: .62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            padding: 6px 8px;
+            border-bottom: 2px solid #000;
+            border-right: 2px solid #000;
+            border-left: 2px solid #000;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .voucher-table thead th:last-child {
+            border-right: none;
+        }
+
+        .voucher-table td {
+            border-left: 2px solid #000;
+            border-right: 2px solid #000;
+            border-bottom: 1px dashed #ccc;
+            padding: 0;
+            vertical-align: middle;
+        }
+
+        .dark .voucher-table td {
+            border-bottom-color: rgba(255, 255, 255, 0.12);
+            border-right-color: rgba(255, 255, 255, 0.4);
+            border-left-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .voucher-table td:last-child {
+            border-right: none;
+        }
+
+        .item-block-end td,
+        td.item-block-end {
+            border-bottom: 2.5px solid #000 !important;
+        }
+
+        .dark .item-block-end td,
+        .dark td.item-block-end {
+            border-bottom: 2.5px solid rgba(255, 255, 255, 0.6) !important;
+        }
+
+        .voucher-table tbody tr:last-child td {
+            border-bottom: 2.5px solid #000 !important;
+        }
+
+        .dark .voucher-table tbody tr:last-child td {
+            border-bottom: 2.5px solid rgba(255, 255, 255, 0.6) !important;
+        }
+
+        .dark .voucher-table thead th {
+            border-bottom-color: rgba(255, 255, 255, 0.6);
+            border-right-color: rgba(255, 255, 255, 0.4);
+            border-left-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .sn-cell {
+            text-align: center;
+            color: var(--muted);
+            font-size: .72rem;
+            font-family: ui-monospace, "JetBrains Mono", monospace;
+        }
+
+        .item-cell {
+            padding: 4px 6px 5px;
+            vertical-align: top;
+        }
+
+        .item-cell input {
+            font-weight: 600;
+        }
+
+        .item-cell .item-name {
+            font-weight: 600;
+            display: block;
+        }
+
+        .item-sub-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 3px 0 0;
+        }
+
+        .item-cell .item-detail {
+            font-weight: 400;
+            font-size: .71rem;
+            color: var(--muted);
+            flex: 0 0 50%;
+            max-width: 50%;
+            min-width: 0;
+        }
+
+        .item-badges {
+            flex: 0 0 50%;
+            max-width: 50%;
+            min-width: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+            padding: 2px 4px 6px 2px;
+        }
+
+        .item-badge {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            background: var(--cyan-2);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-size: .64rem;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-variant-numeric: tabular-nums;
+            transition: all 0.2s;
+        }
+
+        .item-badge.cat {
+            background: #f3f0fb;
+            border-color: #d9d0f0;
+            color: #6a3fb5;
+        }
+
+        .dark .item-badge.cat {
+            background: #2d1f42;
+            border-color: #4c3b6b;
+            color: #bfa6eb;
+        }
+
+        .cell-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 6px 7px;
+            font-size: .78rem;
+            color: var(--ink);
+            font-family: inherit;
+            outline: none;
+            border-radius: 3px;
+        }
+
+        .cell-input:hover {
+            border-color: var(--border);
+        }
+
+        .cell-input:focus {
+            background: var(--card-bg);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(12, 107, 99, .1);
+        }
+
+        .cell-input[disabled] {
+            color: #b7c2c2;
+            background: var(--cyan-2);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .cell-input.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .amt-cell .cell-input {
+            font-family: ui-monospace, "JetBrains Mono", monospace;
+            font-weight: 600;
+            text-align: right;
+            color: var(--ink);
+        }
+
+        .qty-cell {
+            border-left: 3px solid transparent;
+        }
+
+        tr.row1 .qty-cell {
+            border-left-color: var(--primary-row);
+        }
+
+        tr.row2 .qty-cell {
+            border-left-color: var(--secondary-row);
+        }
+
+        .action-cell {
+            text-align: center;
+        }
+
+        .row-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #8a9797;
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            font-size: .85rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .row-btn:hover {
+            background: rgba(179, 56, 42, .1);
+            color: var(--danger);
+        }
+
+        .toggle-unit-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-strong);
+            color: var(--muted);
+            font-size: .62rem;
+            font-weight: 700;
+            border-radius: 4px;
+            padding: 4px 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: .15s;
+        }
+
+        .toggle-unit-btn.active {
+            background: var(--cyan-2);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .add-row-strip {
+            padding: 8px 14px;
+            background: var(--card-bg);
+        }
+
+        .add-row-strip button {
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: .74rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .add-row-strip button:hover {
+            background: var(--cyan-2);
+        }
+
+        /* Footer */
+        .v-foot {
+            padding: 12px 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--card-bg);
+        }
+
+        .foot-left {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .flat-btn {
+            background: var(--card-bg);
+            border: 1px dashed var(--border-strong);
+            color: var(--muted);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: .72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .flat-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--cyan-1);
+        }
+
+        .file-tag {
+            background: var(--cyan-1);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 4px 9px;
+            font-size: .7rem;
+            color: var(--ink);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .file-tag .rm {
+            cursor: pointer;
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .totals {
+            text-align: right;
+            font-size: .75rem;
+            color: var(--muted);
+            display: grid;
+            grid-row-gap: 2px;
+        }
+
+        .totals .line {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .totals .line .lbl {
+            color: var(--muted);
+        }
+
+        .totals .line .val {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            color: var(--ink);
+            min-width: 90px;
+            text-align: right;
+        }
+
+        .totals .grand {
+            font-size: .95rem;
+            font-weight: 800;
+            color: var(--ink);
+            margin-top: 2px;
+        }
+
+        .totals .grand .val {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        @media (max-width:720px) {
+            .close-card {
+                grid-column: 2;
+                justify-self: end;
+            }
+        }
+
+        /* ── New Item Row Styling ── */
+        .new-item-row td {
+            background-color: rgba(124, 58, 237, 0.04) !important;
+        }
+
+        .dark .new-item-row td {
+            background-color: rgba(124, 58, 237, 0.08) !important;
+        }
+
+        .dark .cell-input.violet-glow {
+            border-color: rgba(167, 139, 250, 0.5) !important;
+            background: rgba(124, 58, 237, 0.12) !important;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+       VALIDATION ERROR HIGHLIGHTING
+       ═══════════════════════════════════════════════════════════════ */
+        .cell-input.validation-error {
+            background-color: #fee2e2 !important;
+            border-color: #f87171 !important;
+            box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.25) !important;
+        }
+
+        .dark .cell-input.validation-error {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        }
+
+        .validation-error-row td {
+            background-color: #fff1f2 !important;
+        }
+
+        .dark .validation-error-row td {
+            background-color: rgba(239, 68, 68, 0.08) !important;
+        }
+
+        .validation-error-stock td {
+            background-color: #fef3c7 !important;
+        }
+
+        .dark .validation-error-stock td {
+            background-color: rgba(245, 158, 11, 0.1) !important;
+        }
+
+        .card-validation-error {
+            border-color: #f87171 !important;
+            box-shadow: 0 0 12px rgba(248, 113, 113, 0.3) !important;
+        }
+
+        .dark .card-validation-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.25) !important;
+        }
+
+        .validation-error-msg {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 8px 14px;
+            font-size: 0.75rem;
+            color: #991b1b;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+        }
+
+        .dark .validation-error-msg {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
+        }
+
+        .site-input.validation-error,
+        .date-input.validation-error,
+        .invoice-input.validation-error {
+            background-color: #fee2e2 !important;
+            border-color: #f87171 !important;
+            box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.25) !important;
+        }
+
+        .dark .site-input.validation-error,
+        .dark .date-input.validation-error,
+        .dark .invoice-input.validation-error {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        }
+
+        .txn-type-error {
+            border: 2px solid #f87171 !important;
+            border-radius: 8px;
+            padding: 4px 6px;
+            background: #fff1f2;
+        }
+
+        .dark .txn-type-error {
+            border-color: #ef4444 !important;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        @keyframes shake-error {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-4px);
+            }
+
+            40% {
+                transform: translateX(4px);
+            }
+
+            60% {
+                transform: translateX(-3px);
+            }
+
+            80% {
+                transform: translateX(3px);
+            }
+        }
+
+        .shake-it {
+            animation: shake-error 0.4s ease-in-out;
+        }
+    </style>
+</head>
+
+<body ng-app="StockApp" ng-controller="MainCtrl" ng-class="{'dark-mode': isDarkMode, 'dark': isDarkMode}">
+
+    <!-- ═══ LOADING OVERLAY ═══ -->
+    <div class="loading-overlay" ng-if="isLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading inventory data...</div>
+    </div>
+
+    <!-- ═══ APP BAR ═══ -->
+    <div class="app-bar">
+        <div class="app-bar-brand">Stock Manager</div>
+        <button class="bar-btn" ng-click="openModal('aiConfig')" ng-disabled="isSubmitting"
+            title="Configure AI API (Gemini vs NVIDIA/OpenAI)"
+            style="background: rgba(124, 58, 237, 0.12); border-color: rgba(124, 58, 237, 0.3); color: #a78bfa; font-weight: 600;">
+            🤖 AI: {{ aiConfig.provider === 'gemini' ? 'Gemini' : (aiConfig.model ? aiConfig.model.split('/').pop() : 'Custom') }}
+        </button>
+        <button class="bar-btn" ng-click="openModal('addCategory')" ng-disabled="isSubmitting"
+            title="Add new category">📁 Category</button>
+        <button class="bar-btn" ng-click="openModal('addItem')" ng-disabled="isSubmitting"
+            title="Add new item to master">📦 Item</button>
+        <button class="bar-btn danger" ng-click="clearAllCards()" ng-disabled="isSubmitting" title="Clear all cards">🗑️ Clear</button>
+        <button class="bar-btn" ng-click="refreshData()" ng-disabled="isSubmitting || isLoading"
+            title="Refresh stock data from server"
+            style="background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.3); color: #06b6d4; font-weight: 600;">
+            🔄 Refresh</button>
+        <button class="theme-btn" ng-click="openModal('history')" title="Transaction History">🔍</button>
+        <button class="theme-btn" ng-click="toggleDarkMode()" title="Toggle dark/light mode (Ctrl+D)">
+            <span ng-if="!isDarkMode">🌙</span>
+            <span ng-if="isDarkMode">☀️</span>
+        </button>
+        <button class="theme-btn" ng-click="openModal('shortcuts')" title="Keyboard shortcuts (Ctrl+K)">⌨️</button>
+    </div>
+
+    <!-- ═══ TRANSACTION CARDS ═══ -->
+    <div class="cards-container">
+        <div class="txn-card voucher voucher-busy" ng-repeat="card in cards track by card.id"
+            ng-class="{'new-item-glow': card.isNewItem, 'dropdown-active': isCardDropdownOpen(card), 'card-validation-error': card._hasErrors, 'opacity-75 ring-2 ring-amber-500': card.isPending}"
+            id="card-{{card.id}}">
+
+            <!-- ── Card Header ── -->
+            <div class="v-head"
+                style="display: flex; align-items: flex-end; gap: 14px; padding: 12px 14px 10px; flex-wrap: wrap; border-bottom: 1px solid var(--border);">
+                
+                <!-- Card Status Badge -->
+                <div class="field" style="width: auto; min-width: 60px;">
+                    <label>Card ID</label>
+                    <span class="card-num font-bold text-[11px] block text-center" ng-class="{'bg-amber-500 animate-pulse text-white': card.isPending}" style="height:28px; line-height:22px; padding: 3px 10px; border-radius: 4px;">
+                        {{ card.isPending ? 'PENDING...' : ('CARD ' + ($index + 1)) }}
+                    </span>
+                </div>
+
+                <!-- Site Name Autocomplete -->
+                <div class="field ac-wrap" style="flex: 1; min-width: 160px; max-width: 250px;">
+                    <label>Mat. Centre / Site</label>
+                    <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                        <input type="text" class="site-input" placeholder="Site or store" ng-model="card.siteName"
+                            ng-change="filterSites(card)" ng-focus="card.showSiteDropdown = true; filterSites(card)"
+                            ng-blur="hideSiteDropdown(card)" ng-disabled="card.isPending" autocomplete="off" style="padding-right: 24px;">
+                        <span
+                            style="position: absolute; right: 8px; pointer-events: none; font-size: 0.55rem; color: var(--muted);">▼</span>
+                    </div>
+                    <div class="ac-dropdown" ng-show="card.showSiteDropdown && card.filteredSites.length > 0">
+                        <div class="ac-item" ng-repeat="site in card.filteredSites track by $index"
+                            ng-mousedown="selectSite(card, site)">
+                            {{site}}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Field -->
+                <div class="field" style="display:flex; flex-direction:column; gap:4px;">
+                    <label
+                        style="font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; text-align: left; margin: 0 0 3px;">Date</label>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <input type="date" class="date-input" ng-model="card.date" ng-disabled="card.isPending"
+                            style="border: 1px solid var(--border-strong); border-radius: 4px; background: var(--card-bg); padding: 5px 7px; font-size: .8rem; color: var(--ink); outline: none; width: 140px; height: 32px;" />
+                        <span class="day-tag"
+                            style="font-size: .68rem; color: var(--muted); font-weight: 600; white-space: nowrap; align-self: center;">{{getDayTag(card.date)}}</span>
+                    </div>
+                </div>
+
+                <!-- Transaction Type Pills -->
+                <div class="flex flex-col gap-1.5" style="margin-bottom: 2px;"
+                    ng-class="{'txn-type-error': card._errors && card._errors.txnType}">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TRANSACTION TYPE *</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" ng-repeat="type in txnTypes track by type"
+                            ng-click="setTxnType(card, type)" ng-disabled="card.isPending"
+                            class="px-4 py-1.5 rounded-full text-[11px] font-bold transition-all uppercase border duration-150 outline-none"
+                            ng-class="card.txnType === type ? 
+                            'bg-black text-white border-black dark:bg-white dark:text-slate-900 dark:border-white scale-100 shadow-sm' : 
+                            'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700'">
+                            {{ getTxnTypeLabel(type) }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ref / Invoice No. -->
+                <div class="field" style="width: 130px;">
+                    <label>Ref / Invoice No.</label>
+                    <input placeholder="INV-000" class="invoice-input" ng-model="card.invoiceNumber" ng-disabled="card.isPending" />
+                </div>
+
+                <!-- Close Card Button -->
+                <button class="close-card" ng-click="removeCard($index)" title="Remove card" ng-disabled="card.isPending"
+                    style="margin-left: auto; align-self: center; margin-bottom: 2px;">&times;</button>
+            </div>
+
+            <!-- ── Validation Error Messages ── -->
+            <div class="validation-error-msg" ng-if="card._errorMessages && card._errorMessages.length > 0">
+                <span style="font-size: 1rem; line-height: 1;">❌</span>
+                <div>
+                    <div ng-repeat="msg in card._errorMessages track by $index" style="margin-bottom: 2px;">{{msg}}</div>
+                </div>
+            </div>
+
+            <!-- ── Excel-like Table (Dual-Unit) ── -->
+            <div class="table-scroll">
+                <table class="voucher-table">
+                    <thead>
+                        <tr>
+                            <th style="width:34px">S.N.</th>
+                            <th style="min-width:240px">Item</th>
+                            <th style="width:80px; text-align:right;">Qty</th>
+                            <th style="width:70px">Unit</th>
+                            <th style="width:85px; text-align:right;">Rate</th>
+                            <th style="width:105px; text-align:right;">Amount</th>
+                            <th style="width:70px"></th>
+                            <th style="width:110px; text-align:left;">Transaction</th>
+                            <th style="width:26px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat-start="row in card.rows track by row.rid" class="row1"
+                            ng-class="{'item-block-end': !row.useSecondary, 'new-item-row': row.isNewItem, 'validation-error-row': row._errors && (row._errors.itemName || row._errors.qty || row._errors.noItem), 'validation-error-stock': row._errors && row._errors.stock}">
+                            
+                            <!-- S.N. (rowspan 2) -->
+                            <td class="sn-cell item-block-end" rowspan="{{row.useSecondary ? 2 : 1}}">{{$index + 1}}</td>
+                            
+                            <!-- Item name + detail + badges (rowspan 2) -->
+                            <td class="item-cell item-block-end" rowspan="{{row.useSecondary ? 2 : 1}}">
+                                <div class="ac-wrap" style="width: 100%;">
+                                    <input type="text" class="cell-input item-name"
+                                        placeholder="Search existing or type new name..." ng-model="row.itemName"
+                                        ng-change="onRowItemInput(card, row); clearRowError(row, 'itemName'); clearRowError(row, 'noItem')"
+                                        ng-class="{'violet-glow': row.isNewItem, 'validation-error': row._errors && (row._errors.itemName || row._errors.noItem)}"
+                                        ng-focus="showRowItemDropdownFn(card, row)" ng-blur="hideRowItemDropdown(row)"
+                                        ng-disabled="card.isPending" data-cell="{{card.id}}-{{$index}}-1" excel-nav autocomplete="off"
+                                        style="border: 1px solid var(--border-strong); border-radius: 6px; background: var(--card-bg); height: 28px;">
+                                    
+                                    <!-- Autocomplete Dropdown List with scroll-load-more infinite scrolling -->
+                                    <div class="item-dropdown-right"
+                                        ng-show="row.showItemDropdown && row.filteredItems.length > 0"
+                                        scroll-load-more="loadMoreDropdownItems(row)">
+                                        <div class="sp-item"
+                                            ng-repeat="item in row.filteredItems | limitTo:(row.dropdownLimit || 50) track by (item.category + '|||' + item.name + '|||' + $index)"
+                                            ng-mousedown="selectRowItem(card, row, item)">
+                                            <span class="sp-item-name">{{item.name}}</span>
+                                            <span class="sp-item-meta">
+                                                <span>Stock: {{formatStock(item.stock)}} {{item.unit}}</span>
+                                                <span ng-if="item.secondaryUom">/ {{formatStock(item.stockSec)}} {{item.secondaryUom}}</span>
+                                                <span class="sp-tag">{{item.category.replace('MT.', '')}}</span>
+                                                <span class="sp-tag" ng-if="item.rate">₹{{item.rate}}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- "Create in Master" hint -->
+                                <div ng-if="row.itemName && row.itemName.length > 1 && !row.exactMatch && !row.isNewItem && !card.isPending"
+                                    style="padding: 3px 0 0; display: flex; align-items: center; gap: 4px;">
+                                    <span style="font-size:0.7rem; color:#64748b;">ℹ "{{row.itemName}}" not in master.</span>
+                                    <button type="button"
+                                        style="background:#7c3aed; color:#fff; border:none; padding:2px 8px; border-radius:12px; font-size:0.68rem; font-weight:bold; cursor:pointer;"
+                                        ng-click="markRowAsNewItem(card, row)">+ Create in Master</button>
+                                </div>
+
+                                <div class="item-sub-row" style="display: flex; align-items: center; gap: 8px;">
+                                    <input class="cell-input item-detail" placeholder="Detail..." ng-disabled="card.isPending"
+                                        ng-model="row.additionalDetail" data-cell="{{card.id}}-{{$index}}-2" excel-nav
+                                        ng-class="{'violet-glow': row.isNewItem}" style="flex: 1;">
+
+                                    <!-- Category Filter Dropdown -->
+                                    <select class="cell-input" ng-model="row.selectedCategory" ng-disabled="card.isPending"
+                                        ng-change="onRowCategoryChange(card, row)" ng-if="!row.isNewItem"
+                                        style="border: 1px solid var(--border-strong); border-radius: 4px; background: var(--card-bg); padding: 2px 6px; font-size: .75rem; color: var(--ink); outline: none; height: 26px; appearance: auto; width: 140px; min-width: 140px;">
+                                        <option value="">All Categories</option>
+                                        <option ng-repeat="cat in categories" value="{{cat}}">{{cat.replace('MT.', '')}}</option>
+                                    </select>
+
+                                    <!-- Dynamic Stock Badges (Optimistic Updates + Rate Mismatch warnings) -->
+                                    <div class="item-badges" ng-if="row.selectedItem">
+                                        <span class="item-badge" ng-class="{'border-amber-500 text-amber-600': card.isPending}">
+                                            Current: 
+                                            <span class="stock1-val">{{formatStock(getRunningStock(card, row, false))}}</span>
+                                            {{row.selectedItem.unit}}
+                                            <span ng-if="card.isPending" class="animate-pulse">⏳</span>
+                                        </span>
+                                        <span class="item-badge" ng-if="row.selectedItem.secondaryUom" ng-class="{'border-amber-500 text-amber-600': card.isPending}">
+                                            Current: 
+                                            <span class="stock2-val">{{formatStock(getRunningStock(card, row, true))}}</span>
+                                            {{row.selectedItem.secondaryUom}}
+                                            <span ng-if="card.isPending" class="animate-pulse">⏳</span>
+                                        </span>
+                                        <span class="item-badge cat">{{row.selectedItem.category}}</span>
+
+                                        <!-- Real-Time Implied Conversion Mismatch Warning -->
+                                        <span ng-if="row.rateMismatch" class="item-badge" style="background:#fff1f2; border-color:#fecdd3; color:#e11d48; font-weight:700;" title="implied conversion factor from rates differs from master factor by >5%">
+                                            ⚠️ Rate Mismatch (Dev: {{row.deviationPercent > 0 ? '+' : ''}}{{row.deviationPercent}}%)
+                                        </span>
+                                    </div>
+
+                                    <div class="item-badges" ng-if="row.isNewItem" style="max-width: none; flex: 1;">
+                                        <!-- Inline New Item Creation UI -->
+                                        <div style="display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                                            <span style="font-size:0.7rem; color:#7c3aed; font-weight:600; white-space:nowrap;">New: "{{row.itemName}}"</span>
+                                            <select class="form-input" ng-model="row.newItemCategory" ng-disabled="card.isPending"
+                                                ng-style="!row.newItemCategory ? {'background-color': '#fee2e2', 'border-color': '#f87171', 'color': '#991b1b'} : {'background-color': '#ede9fe', 'border-color': '#c084fc', 'color': '#5b21b6'}"
+                                                style="font-size: 0.72rem; width:auto; padding:2px 8px; border-radius:4px; height: 22px; line-height: 1; outline:none; transition: all 0.2s;">
+                                                <option value="">Category *</option>
+                                                <option ng-repeat="cat in categories" value="{{cat}}">{{cat}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Qty 1 -->
+                            <td class="qty-cell">
+                                <input type="number" class="cell-input num qty1" placeholder="0" min="0" step="any"
+                                    ng-model="row.qty" ng-disabled="card.isPending"
+                                    ng-change="onQty1Change(row); clearRowError(row, 'qty'); clearRowError(row, 'stock')"
+                                    ng-class="{'violet-glow': row.isNewItem, 'validation-error': row._errors && (row._errors.qty || row._errors.stock)}"
+                                    data-cell="{{card.id}}-{{$index}}-3" excel-nav>
+                            </td>
+
+                            <!-- Unit 1 -->
+                            <td>
+                                <input type="text" class="cell-input unit1" placeholder="pcs" ng-model="row.unit" ng-disabled="card.isPending"
+                                    ng-class="{'violet-glow': row.isNewItem, 'validation-error': row._errors && row._errors.unit}"
+                                    data-cell="{{card.id}}-{{$index}}-4" excel-nav>
+                            </td>
+
+                            <!-- Rate 1 -->
+                            <td>
+                                <input type="number" class="cell-input num rate1" placeholder="0" min="0" step="any"
+                                    ng-model="row.rate" ng-change="onRate1Change(row)" ng-disabled="card.isPending"
+                                    ng-class="{'violet-glow': row.isNewItem, 'validation-error': row._errors && row._errors.rate}"
+                                    data-cell="{{card.id}}-{{$index}}-5" excel-nav>
+                            </td>
+
+                            <!-- Amount 1 -->
+                            <td class="amt-cell">
+                                <input type="number" class="cell-input num amt1" placeholder="0.00" step="any"
+                                    ng-model="row.amount" ng-change="onAmount1Change(row)" ng-disabled="card.isPending"
+                                    ng-class="{'violet-glow': row.isNewItem}">
+                            </td>
+
+                            <!-- Toggle unit button (rowspan 2) -->
+                            <td rowspan="{{row.useSecondary ? 2 : 1}}" class="item-block-end"
+                                style="text-align:center;">
+                                <button class="toggle-unit-btn" ng-class="{'active': row.useSecondary}" ng-disabled="card.isPending"
+                                    ng-click="row.useSecondary = !row.useSecondary" title="Toggle secondary unit">
+                                    {{row.useSecondary ? '2 units' : '1 unit'}}
+                                </button>
+                            </td>
+
+                            <!-- Transaction Dropdown -->
+                            <td rowspan="{{row.useSecondary ? 2 : 1}}" class="item-block-end"
+                                style="text-align:center;">
+                                <select class="cell-input" ng-model="row.txnType" ng-disabled="card.isPending"
+                                    style="font-size: 0.75rem; appearance: auto; cursor: pointer; text-overflow: ellipsis; outline: none; padding: 4px 6px; height: 28px; line-height: 1.2;">
+                                    <option value="">Default ({{ getTxnTypeLabel(card.txnType) }})</option>
+                                    <option ng-repeat="type in txnTypes track by type" value="{{type}}">{{ getTxnTypeLabel(type) }}</option>
+                                </select>
+                            </td>
+
+                            <!-- Remove button (rowspan 2) -->
+                            <td class="action-cell item-block-end" rowspan="{{row.useSecondary ? 2 : 1}}">
+                                <button class="row-btn" ng-click="removeRow(card, $index)" ng-disabled="card.isPending"
+                                    title="Remove item">&times;</button>
+                            </td>
+                        </tr>
+
+                        <!-- Secondary Unit Entry Row -->
+                        <tr ng-repeat-end class="row2 item-block-end" ng-if="row.useSecondary"
+                            ng-class="{'new-item-row': row.isNewItem, 'validation-error-row': row._errors && (row._errors.itemName || row._errors.qty || row._errors.noItem), 'validation-error-stock': row._errors && row._errors.stock}">
+                            
+                            <!-- Qty 2 -->
+                            <td class="qty-cell">
+                                <input type="number" class="cell-input num qty2" placeholder="0" min="0" step="any"
+                                    ng-model="row.qty2" ng-change="onQty2Change(row)" ng-disabled="card.isPending"
+                                    data-cell="{{card.id}}-{{$index}}-6" excel-nav
+                                    ng-class="{'violet-glow': row.isNewItem}">
+                            </td>
+
+                            <!-- Unit 2 -->
+                            <td>
+                                <input type="text" class="cell-input unit2" placeholder="kg" ng-model="row.unit2" ng-disabled="card.isPending"
+                                    data-cell="{{card.id}}-{{$index}}-7" excel-nav
+                                    ng-class="{'violet-glow': row.isNewItem}">
+                            </td>
+
+                            <!-- Rate 2 -->
+                            <td>
+                                <input type="number" class="cell-input num rate2" placeholder="0" min="0" step="any"
+                                    ng-model="row.rate2" ng-change="onRate2Change(row)" ng-disabled="card.isPending"
+                                    data-cell="{{card.id}}-{{$index}}-8" excel-nav
+                                    ng-class="{'violet-glow': row.isNewItem}">
+                            </td>
+
+                            <!-- Amount 2 -->
+                            <td class="amt-cell">
+                                <input type="number" class="cell-input num amt2" placeholder="0.00" step="any"
+                                    ng-model="row.amount2" ng-change="onAmount2Change(row)" ng-disabled="card.isPending"
+                                    ng-class="{'violet-glow': row.isNewItem}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add Row strip -->
+            <div class="add-row-strip" ng-if="!card.isPending">
+                <button ng-click="addRow(card)">+ Add Item Row</button>
+            </div>
+
+            <!-- ── Additional Note ── -->
+            <div style="padding: 10px 14px; border-top: 1px solid var(--border); background: var(--card-bg);">
+                <div class="field" style="display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; text-align: left; margin: 0;">Additional Note</label>
+                    <input type="text" ng-model="card.additionalNote" ng-disabled="card.isPending"
+                        placeholder="Enter any comments or references for this card..."
+                        style="border: 1px solid var(--border-strong); border-radius: 4px; background: var(--card-bg); padding: 6px 10px; font-size: .8rem; color: var(--ink); outline: none; width: 100%; height: 32px;" />
+                </div>
+            </div>
+
+            <!-- ── Card Footer ── -->
+            <div class="v-foot">
+                <div class="foot-left">
+                    <input type="file" id="file-{{card.id}}" accept="image/*,.pdf" style="display:none"
+                        file-model="card.fileObj" onchange="angular.element(this).scope().onFileSelected(this)">
+                    <label class="flat-btn" style="cursor:pointer;" ng-click="triggerFileUpload(card)"
+                        ng-if="!card.fileObj && !card.isPending">
+                        📎 Upload Bill
+                    </label>
+                    <span class="file-tag" ng-if="card.fileObj">
+                        📄 {{card.fileObj.name | limitTo:20}}
+                        <span class="rm" ng-click="removeFile(card)" ng-if="!card.isPending">&times;</span>
+                    </span>
+                    <button class="flat-btn ai-btn" ng-click="aiAutoFill(card)" ng-if="card.fileObj && !card.isPending"
+                        ng-disabled="card.isExtracting">
+                        <span ng-if="!card.isExtracting">🤖 AI Auto-Fill</span>
+                        <span ng-if="card.isExtracting">⏳ Extracting...</span>
+                    </button>
+                    <button class="flat-btn" ng-click="openJsonPasteModal(card)" ng-if="!card.isPending"
+                        style="border-style: solid; border-color: rgba(99, 102, 241, 0.3); color: #6366f1;">
+                        📋 Paste AI JSON
+                    </button>
+                </div>
+                <div class="totals">
+                    <div class="line">
+                        <span class="lbl">Qty Total</span>
+                        <span class="val">{{formatQty(getCardQtyTotal(card))}}</span>
+                    </div>
+                    <div class="line">
+                        <span class="lbl">Alt. Qty Total</span>
+                        <span class="val">{{formatQty(getCardAltQtyTotal(card))}}</span>
+                    </div>
+                    <div class="line grand">
+                        <span class="lbl">Grand Total</span>
+                        <span class="val">₹{{getCardGrandTotal(card) | number:2}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ BOTTOM ACTION BAR ═══ -->
+    <div class="bottom-bar">
+        <button class="primary-btn btn-add-card" ng-click="addCard(true)" ng-disabled="isSubmitting">
+            + Add Card
+            <span class="card-count-badge" ng-if="cards.length > 0">{{cards.length}}</span>
+        </button>
+        <button class="primary-btn btn-submit" ng-click="submitAll()" ng-disabled="isSubmitting || cards.length === 0">
+            📤 Submit All
+        </button>
+    </div>
+
+    <!-- ═══ MODAL: AI CONFIGURATION ═══ -->
+    <div class="modal-backdrop" ng-if="activeModal === 'aiConfig'" ng-click="closeModal()">
+        <div class="modal-box" ng-click="$event.stopPropagation()" style="max-width: 580px;">
+            <div class="modal-header">
+                ⚙️ AI API Configuration
+                <button class="modal-close" ng-click="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label"
+                        style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b; margin-bottom: 8px;">AI Service Provider</label>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="modal-btn"
+                            ng-class="{'primary bg-brand text-white border-brand': aiConfig.provider === 'gemini'}"
+                            ng-click="aiConfig.provider = 'gemini'"
+                            style="flex: 1; text-align: center; justify-content: center; font-weight: 600; height: 36px; display: flex; align-items: center; border-radius: 6px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.15s;"
+                            ng-style="aiConfig.provider === 'gemini' ? {'background': '#6366f1', 'color': '#fff', 'border-color': '#6366f1'} : {}">
+                            Built-in Gemini AI
+                        </button>
+                        <button type="button" class="modal-btn"
+                            ng-class="{'primary bg-brand text-white border-brand': aiConfig.provider === 'custom'}"
+                            ng-click="aiConfig.provider = 'custom'"
+                            style="flex: 1; text-align: center; justify-content: center; font-weight: 600; height: 36px; display: flex; align-items: center; border-radius: 6px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.15s;"
+                            ng-style="aiConfig.provider === 'custom' ? {'background': '#6366f1', 'color': '#fff', 'border-color': '#6366f1'} : {}">
+                            Custom OpenAI / NVIDIA API
+                        </button>
+                    </div>
+                </div>
+
+                <div ng-if="aiConfig.provider === 'custom'">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label class="form-label"
+                            style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b; margin-bottom: 4px;">API Key</label>
+                        <input type="password" class="form-input" ng-model="aiConfig.apiKey"
+                            placeholder="e.g. nvapi-aDk7..."
+                            style="width: 100%; border: 1px solid #e2e8f0; border-radius: 7px; padding: 8px 12px; background: #fff; color: #0f172a; outline: none; font-size: 0.82rem;" />
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label class="form-label"
+                            style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b; margin-bottom: 4px;">Base URL</label>
+                        <input type="text" class="form-input" ng-model="aiConfig.baseURL"
+                            placeholder="e.g. https://integrate.api.nvidia.com/v1"
+                            style="width: 100%; border: 1px solid #e2e8f0; border-radius: 7px; padding: 8px 12px; background: #fff; color: #0f172a; outline: none; font-size: 0.82rem;" />
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label class="form-label"
+                            style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b; margin-bottom: 4px;">Model Name</label>
+                        <input type="text" class="form-input" ng-model="aiConfig.model" placeholder="e.g. z-ai/glm-5.2"
+                            style="width: 100%; border: 1px solid #e2e8f0; border-radius: 7px; padding: 8px 12px; background: #fff; color: #0f172a; outline: none; font-size: 0.82rem;" />
+                    </div>
+                    <p style="font-size:0.68rem; color:#94a3b8; margin-top:4px; line-height: 1.4;">
+                        ℹ The custom endpoint must support OpenAI Chat Completions formatting with image vision inputs.
+                    </p>
+                </div>
+
+                <div ng-if="aiConfig.provider === 'gemini'">
+                    <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 10px; line-height: 1.5;">
+                        Using the built-in Gemini API Key configured in your Google Apps Script Properties.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer"
+                style="padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="modal-btn" ng-click="closeModal()">Cancel</button>
+                <button class="modal-btn primary bg-brand text-white border-brand" ng-click="saveAiConfig()"
+                    style="background: #6366f1; border-color: #6366f1; color: #fff; border-radius: 7px; padding: 7px 18px; font-weight: 600; cursor: pointer;">
+                    💾 Save Config
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MODAL: PASTE AI JSON ═══ -->
+    <div class="modal-backdrop" ng-if="activeModal === 'pasteJson'" ng-click="closeModal()">
+        <div class="modal-box" ng-click="$event.stopPropagation()" style="max-width: 580px;">
+            <div class="modal-header">
+                📋 Paste AI JSON Data
+                <button class="modal-close" ng-click="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                    <p class="text-xs text-slate-500" style="margin: 0; font-size: 0.72rem; color: #64748b;">
+                        Use this standard format. Click the button to copy instructions:
+                    </p>
+                    <button type="button" class="modal-btn" ng-click="copyAiPromptToClipboard()"
+                        style="padding: 3px 8px; font-size: 0.68rem; background: #eef2ff; border-color: #c7d2fe; color: #4f46e5; font-weight: 600;">
+                        📋 Copy Prompt for ChatGPT/Gemini
+                    </button>
+                </div>
+                <pre class="bg-slate-100 dark:bg-slate-800 p-2.5 rounded text-[10px] font-mono overflow-auto mb-3 max-h-[160px] text-slate-700 dark:text-slate-300"
+                    style="background: rgba(15, 23, 42, 0.05); padding: 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 10px; overflow: auto; margin-bottom: 12px; max-height: 165px; color: #374151;">
+{
+  "invoiceNumber": "INV-001",
+  "date": "YYYY-MM-DD",
+  "items": [
+    {
+      "itemName": "Steel Rod 12mm",
+      "quantity": 10,
+      "unit": "pcs",
+      "rate": 150,
+      "amount": 1500,
+      "additionalDetail": "Grade A"
+    }
+  ]
+}</pre>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label class="form-label"
+                        style="display: block; font-size: 0.72rem; font-weight: 600; color: #64748b; margin-bottom: 4px;">Raw JSON text</label>
+                    <textarea class="form-input font-mono text-[11px]" rows="10" ng-model="modalData.rawJsonInput"
+                        placeholder="Paste here..."
+                        style="width: 100%; border: 1px solid #e2e8f0; border-radius: 7px; padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; resize: vertical; outline: none; background: #fff; color: #0f172a;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer"
+                style="padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="modal-btn" ng-click="closeModal()">Cancel</button>
+                <button class="modal-btn primary bg-brand text-white border-brand" ng-click="applyJsonAutofill()"
+                    ng-disabled="!modalData.rawJsonInput"
+                    style="background: #6366f1; border-color: #6366f1; color: #fff;">
+                    ⚡ Autofill Card
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MODAL: ADD CATEGORY ═══ -->
+    <div class="modal-backdrop" ng-if="activeModal === 'addCategory'" ng-click="closeModal()">
+        <div class="modal-box" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                📁 Add New Category
+                <button class="modal-close" ng-click="closeModal()" ng-disabled="isCreatingCategory">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Category Name</label>
+                    <input type="text" class="form-input" ng-model="modalData.newCategoryName"
+                        ng-disabled="isCreatingCategory" placeholder="e.g. Hardware, Tools, Iron Section"
+                        ng-keydown="$event.keyCode === 13 && !isCreatingCategory && createCategory()">
+                </div>
+                <p style="font-size:0.72rem; color:#94a3b8; margin-top:4px;">A new sheet "MT.{{modalData.newCategoryName}}" will be created in your spreadsheet.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" ng-click="closeModal()" ng-disabled="isCreatingCategory">Cancel</button>
+                <button class="modal-btn primary" ng-click="createCategory()"
+                    ng-disabled="!modalData.newCategoryName || isCreatingCategory">
+                    <span ng-if="!isCreatingCategory">Create</span>
+                    <span ng-if="isCreatingCategory">Creating...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MODAL: ADD ITEM ═══ -->
+    <div class="modal-backdrop" ng-if="activeModal === 'addItem'" ng-click="closeModal()">
+        <div class="modal-box" ng-click="$event.stopPropagation()" style="max-width:620px;">
+            <div class="modal-header">
+                📦 Add New Item to Master
+                <button class="modal-close" ng-click="closeModal()" ng-disabled="isAddingItem">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div class="form-group">
+                        <label class="form-label">Item Name *</label>
+                        <input type="text" class="form-input" ng-model="newItem.itemName" ng-disabled="isAddingItem"
+                            placeholder="e.g. Steel Rod 12mm">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category *</label>
+                        <select class="form-input" ng-model="newItem.itemCategory" ng-disabled="isAddingItem"
+                            style="height:38px;">
+                            <option value="">Select Category</option>
+                            <option ng-repeat="cat in categories" value="{{cat}}">{{cat}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div class="form-group">
+                        <label class="form-label">Unit *</label>
+                        <input type="text" class="form-input" ng-model="newItem.itemUnit" ng-disabled="isAddingItem"
+                            placeholder="e.g. pcs, kg, mtr">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Initial Qty</label>
+                        <input type="number" class="form-input" ng-model="newItem.currentQty" ng-disabled="isAddingItem"
+                            placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rate (₹)</label>
+                        <input type="number" class="form-input" ng-model="newItem.rate" ng-disabled="isAddingItem"
+                            placeholder="0" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Item Image (Optional)</label>
+                    <input type="file" id="addItemImageInput" accept="image/*" class="form-input"
+                        style="padding:6px; font-size:0.78rem;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" ng-click="closeModal()" ng-disabled="isAddingItem">Cancel</button>
+                <button class="modal-btn primary" ng-click="submitNewItem()"
+                    ng-disabled="!newItem.itemName || !newItem.itemCategory || !newItem.itemUnit || isAddingItem">
+                    <span ng-if="!isAddingItem">Add Item</span>
+                    <span ng-if="isAddingItem">Adding...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MODAL: KEYBOARD SHORTCUTS ═══ -->
+    <div class="modal-backdrop" ng-if="activeModal === 'shortcuts'" ng-click="closeModal()">
+        <div class="modal-box" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                ⌨️ Keyboard Shortcuts
+                <button class="modal-close" ng-click="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table style="width:100%; font-size:0.82rem;">
+                    <tr style="border-bottom:1px solid #e2e8f0;">
+                        <td style="padding:8px 0;"><span class="kbd">Ctrl</span> + <span class="kbd">N</span></td>
+                        <td style="padding:8px 0;">Add new card</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #e2e8f0;">
+                        <td style="padding:8px 0;"><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span></td>
+                        <td style="padding:8px 0;">Submit all cards</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #e2e8f0;">
+                        <td style="padding:8px 0;"><span class="kbd">Ctrl</span> + <span class="kbd">D</span></td>
+                        <td style="padding:8px 0;">Toggle dark/light mode</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #e2e8f0;">
+                        <td style="padding:8px 0;"><span class="kbd">Ctrl</span> + <span class="kbd">K</span></td>
+                        <td style="padding:8px 0;">Show shortcuts</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 0;"><span class="kbd">Escape</span></td>
+                        <td style="padding:8px 0;">Close modal</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ MODAL: TRANSACTION HISTORY ═══ -->
+    <div class="modal-backdrop" ng-if="activeModal === 'history'" ng-click="closeModal()">
+        <div class="modal-box" ng-click="$event.stopPropagation()" style="max-width:820px;">
+            <div class="modal-header">
+                🔍 Recent Transactions
+                <button class="modal-close" ng-click="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding:0;">
+                <div style="max-height:50vh; overflow:auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th>Site</th>
+                                <th>Invoice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-if="recentTransactions.length === 0">
+                                <td colspan="6" style="text-align:center; color:#94a3b8; padding:20px;">No transactions found</td>
+                            </tr>
+                            <tr ng-repeat="txn in recentTransactions track by txn.transactionId">
+                                <td style="font-family:var(--font-mono); font-size:0.68rem;">{{txn.timestamp}}</td>
+                                <td>
+                                    <span style="padding:2px 6px; border-radius:4px; font-size:0.65rem; font-weight:600;"
+                                        ng-class="{
+                                          'background:#d1fae5;color:#059669': txn.type === 'In' || txn.type === 'Purchase',
+                                          'background:#ffe4e6;color:#e11d48': txn.type === 'Out' || txn.type === 'Issue',
+                                          'background:#dbeafe;color:#2563eb': txn.type === 'Direct',
+                                          'background:#fef3c7;color:#d97706': txn.type === 'Return-Site',
+                                          'background:#f5f3ff;color:#7c3aed': txn.type === 'Adjustment'
+                                        }">{{txn.type}}</span>
+                                </td>
+                                <td>{{txn.itemName | limitTo:30}}</td>
+                                <td style="font-family:var(--font-mono);">{{txn.qty}}</td>
+                                <td>{{txn.site}}</td>
+                                <td style="font-family:var(--font-mono); font-size:0.68rem;">{{txn.invoiceNumber}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ ANGULARJS APPLICATION ═══ -->
+    <script>
+        // ── Local Development Mock for google.script.run ──
+        if (typeof google === 'undefined') {
+            window.google = {
+                script: {
+                    run: {
+                        withSuccessHandler: function (successFn) {
+                            return {
+                                withFailureHandler: function (failFn) {
+                                    var runObj = {
+                                        getDropdownData: function () {
+                                            setTimeout(function () {
+                                                successFn({
+                                                    sites: ['Main Site', 'Delhi Branch', 'Mumbai Site', 'Warehouse A'],
+                                                    categories: ['MT.Profile', 'MT.Hardware', 'MT.Glass'],
+                                                    itemsByCategory: {
+                                                        'MT.Profile': [
+                                                            { name: '1x1 Alu. Angle Local Cora Anodised', stock: 120, unit: 'pcs', rate: 80, secondaryUom: 'kg', stockSec: 240, conversionFactor: 2, category: 'MT.Profile' },
+                                                            { name: '2x2 Alu. Section Heavy Duty', stock: 50, unit: 'pcs', rate: 150, secondaryUom: 'kg', stockSec: 150, conversionFactor: 3, category: 'MT.Profile' }
+                                                        ],
+                                                        'MT.Hardware': [
+                                                            { name: 'Steel Screws 1 inch', stock: 5000, unit: 'pcs', rate: 0.5, category: 'MT.Hardware' }
+                                                        ]
+                                                    },
+                                                    suppliers: [],
+                                                    activeBatches: [],
+                                                    uoms: [],
+                                                    userEmail: 'dev@local.com'
+                                                });
+                                            }, 500);
+                                        },
+                                        submitForm: function (payload) {
+                                            setTimeout(function () {
+                                                console.log('Local Submit Payload:', payload);
+                                                successFn({ success: true });
+                                            }, 500);
+                                        },
+                                        addCategory: function (catName) {
+                                            setTimeout(function () {
+                                                successFn({ success: true, sheetName: 'MT.' + catName, message: 'Category created' });
+                                            }, 500);
+                                        },
+                                        getRecentTransactions: function (limit) {
+                                            setTimeout(function () {
+                                                successFn([]);
+                                            }, 500);
+                                        },
+                                        addItem: function (payload) {
+                                            setTimeout(function () {
+                                                successFn({
+                                                    success: true,
+                                                    item: {
+                                                        name: payload.itemName,
+                                                        stock: payload.currentQty || 0,
+                                                        unit: payload.itemUnit,
+                                                        rate: payload.rate || 0,
+                                                        imageUrl: '',
+                                                        category: payload.itemCategory
+                                                    }
+                                                });
+                                            }, 500);
+                                        },
+                                        extractBillWithAI: function (imageData, aiConfig, inventoryContext) {
+                                            setTimeout(function () {
+                                                successFn({
+                                                    invoiceNumber: 'INV-MOCK-001',
+                                                    date: '2026-07-14',
+                                                    items: [
+                                                        { itemName: '1x1 Alu. Angle Local Cora Anodised', quantity: 10, unit: 'pcs', rate: 80, amount: 800, additionalDetail: 'AI extracted' },
+                                                        { itemName: '2x2 Alu. Section Heavy Duty', quantity: 5, unit: 'pcs', rate: 150, amount: 750, additionalDetail: 'AI extracted' }
+                                                    ],
+                                                    totalAmount: 1550
+                                                });
+                                            }, 1000);
+                                        },
+                                        uploadBillImage: function (fileData) {
+                                            setTimeout(function () {
+                                                successFn({ success: true, url: 'https://mock-drive-url.com/file', id: 'mock-id' });
+                                            }, 500);
+                                        },
+                                        validateStockAvailability: function (payload) {
+                                            setTimeout(function () {
+                                                successFn({ valid: true });
+                                            }, 300);
+                                        }
+                                    };
+                                    return runObj;
+                                }
+                            };
+                        }
+                    }
+                }
+            };
+        }
+
+        var app = angular.module('StockApp', []);
+
+        // ── File Model Directive ──
+        app.directive('fileModel', ['$parse', function ($parse) {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+                    element.bind('change', function () {
+                        scope.$apply(function () {
+                            $parse(attrs.fileModel).assign(scope, element[0].files[0]);
+                        });
+                    });
+                }
+            };
+        }]);
+
+        // ── Lazy Loading Autocomplete Scroll Directive ──
+        app.directive('scrollLoadMore', ['$timeout', function ($timeout) {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+                    element.on('scroll', function () {
+                        var raw = element[0];
+                        // If user scrolled to within 15px of bottom, execute scroll expression
+                        if (raw.scrollTop + raw.clientHeight >= raw.scrollHeight - 15) {
+                            scope.$apply(attrs.scrollLoadMore);
+                        }
+                    });
+                }
+            };
+        }]);
+
+        // ── Excel Arrow-Key Navigation Directive ──
+        app.directive('excelNav', ['$timeout', function ($timeout) {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+                    element.on('keydown', function (e) {
+                        var cell = attrs.cell || attrs.dataCell;
+                        if (!cell) {
+                            cell = element[0].getAttribute('data-cell');
+                        }
+                        if (!cell) return;
+                        var parts = cell.split('-');
+                        var cardId = parts[0];
+                        var rowIdx = parseInt(parts[1]);
+                        var colIdx = parseInt(parts[2]);
+
+                        var targetRow = rowIdx;
+                        var targetCol = colIdx;
+                        var handled = false;
+
+                        var hasSec = scope.row && scope.row.useSecondary;
+
+                        if (e.key === 'ArrowUp') {
+                            targetRow = Math.max(0, rowIdx - 1);
+                            handled = true;
+                        } else if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                            targetRow = rowIdx + 1;
+                            handled = true;
+                        } else if (e.key === 'ArrowLeft' && element[0].selectionStart === 0 && element[0].type !== 'number') {
+                            targetCol = colIdx - 1;
+                            if (targetCol < 1 && rowIdx > 0) {
+                                targetRow = rowIdx - 1;
+                                var prevCard = scope.card || scope.$parent.card;
+                                var prevRow = prevCard && prevCard.rows[targetRow];
+                                targetCol = (prevRow && prevRow.useSecondary) ? 8 : 5;
+                            } else if (targetCol < 1) {
+                                targetCol = 1;
+                            }
+                            handled = true;
+                        } else if (e.key === 'ArrowRight' && element[0].selectionStart === element[0].value.length && element[0].type !== 'number') {
+                            targetCol = colIdx + 1;
+                            var curMaxCol = hasSec ? 8 : 5;
+                            if (targetCol > curMaxCol) {
+                                targetRow = rowIdx + 1;
+                                targetCol = 1;
+                            }
+                            handled = true;
+                        } else if (e.key === 'Tab' && !e.shiftKey) {
+                            var curMaxCol = hasSec ? 8 : 5;
+                            if (colIdx < curMaxCol) {
+                                targetCol = colIdx + 1;
+                                handled = true;
+                            } else {
+                                targetRow = rowIdx + 1;
+                                targetCol = 1;
+                                handled = true;
+                                $timeout(function () {
+                                    var card = scope.card || scope.$parent.card;
+                                    if (card && targetRow >= card.rows.length) {
+                                        scope.addRow(card);
+                                    }
+                                });
+                            }
+                        } else if (e.key === 'Tab' && e.shiftKey) {
+                            if (colIdx > 1) {
+                                targetCol = colIdx - 1;
+                                handled = true;
+                            } else if (rowIdx > 0) {
+                                targetRow = rowIdx - 1;
+                                var prevCard = scope.card || scope.$parent.card;
+                                var prevRow = prevCard && prevCard.rows[targetRow];
+                                targetCol = (prevRow && prevRow.useSecondary) ? 8 : 5;
+                                handled = true;
+                            }
+                        }
+
+                        if (handled) {
+                            e.preventDefault();
+                            $timeout(function () {
+                                var targetId = cardId + '-' + targetRow + '-' + targetCol;
+                                var targetEl = document.querySelector('[data-cell="' + targetId + '"]');
+                                if (targetEl) {
+                                    targetEl.focus();
+                                    if (targetEl.select) targetEl.select();
+                                }
+                            }, 30);
+                        }
+                    });
+                }
+            };
+        }]);
+
+        // ── Main Controller ──
+        app.controller('MainCtrl', ['$scope', '$timeout', '$q', function ($scope, $timeout, $q) {
+
+            // ── State ──
+            $scope.isLoading = true;
+            $scope.isSubmitting = false;
+            $scope.isDarkMode = localStorage.getItem('sm_dark') === 'true';
+            $scope.activeModal = null;
+            $scope.modalData = {
+                newCategoryName: '',
+                rawJsonInput: ''
+            };
+            $scope.isCreatingCategory = false;
+            $scope.newItem = {};
+            $scope.isAddingItem = false;
+            $scope.jsonPasteTargetCard = null;
+
+            // ── Data ──
+            $scope.sites = [];
+            $scope.categories = [];
+            $scope.inventoryData = {};
+            $scope.activeBatches = [];
+            $scope.uoms = [];
+            $scope.userEmail = '';
+            $scope.recentTransactions = [];
+
+            $scope.txnTypes = ['In', 'Out', 'Repair', 'Return', 'Stock Adjust', 'Direct'];
+            $scope.getTxnTypeLabel = function (type) {
+                var map = {
+                    'In': 'IN',
+                    'Out': 'OUT',
+                    'Repair': 'REPAIR',
+                    'Return': 'RETURN',
+                    'Stock Adjust': 'ADJUST',
+                    'Direct': 'DIRECT'
+                };
+                return map[type] || type.toUpperCase();
+            };
+            $scope.cards = [];
+
+            // Load custom AI config from localStorage
+            $scope.aiConfig = {
+                provider: 'gemini',
+                apiKey: '',
+                baseURL: 'https://integrate.api.nvidia.com/v1',
+                model: 'z-ai/glm-5.2'
+            };
+            var savedAi = localStorage.getItem('sm_ai_config');
+            if (savedAi) {
+                try {
+                    $scope.aiConfig = angular.fromJson(savedAi);
+                } catch (e) { }
+            }
+
+            // ── Counters ──
+            var cardIdCounter = 0;
+            var rowIdCounter = 0;
+
+            // ── Memoization Search Cache ──
+            var searchCache = {};
+
+            function clearSearchCache() {
+                searchCache = {};
+            }
+
+            // ── Initialize ──
+            function init() {
+                $scope.isLoading = true;
+                google.script.run.withSuccessHandler(function (data) {
+                    $timeout(function () {
+                        $scope.sites = data.sites || [];
+                        $scope.categories = data.categories || [];
+                        $scope.inventoryData = data.itemsByCategory || {};
+                        $scope.activeBatches = data.activeBatches || [];
+                        $scope.uoms = data.uoms || [];
+                        $scope.userEmail = data.userEmail || '';
+                        $scope.isLoading = false;
+                        
+                        clearSearchCache();
+
+                        // Load local draft first
+                        var loaded = loadDraft();
+                        if (!loaded) {
+                            if ($scope.cards.length === 0) {
+                                $scope.addCard(false);
+                                if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                                    populateMockDataForSSTest($scope.cards[0]);
+                                }
+                            }
+                        }
+                        // Validate immediately after loading is done
+                        $timeout(function () {
+                            $scope.validateCardsRealTime();
+                        }, 100);
+                    });
+                }).withFailureHandler(function (err) {
+                    $timeout(function () {
+                        $scope.isLoading = false;
+                        alert('Failed to load data: ' + err);
+                    });
+                }).getDropdownData();
+            }
+
+            // ── Load Local Draft ──
+            function loadDraft() {
+                var draftStr = localStorage.getItem('sm_cards_draft');
+                if (draftStr) {
+                    try {
+                        var draftCards = angular.fromJson(draftStr);
+                        if (Array.isArray(draftCards) && draftCards.length > 0) {
+                            var maxCardId = 0;
+                            var maxRowId = 0;
+
+                            draftCards.forEach(function (card) {
+                                if (card.id > maxCardId) maxCardId = card.id;
+                                if (card.date) {
+                                    card.date = new Date(card.date);
+                                } else {
+                                    card.date = new Date();
+                                }
+                                card.isPending = false; // Reset pending state on reload
+                                if (Array.isArray(card.rows)) {
+                                    card.rows.forEach(function (row) {
+                                        if (row.rid > maxRowId) maxRowId = row.rid;
+                                        if (row.txnType === undefined) row.txnType = '';
+                                        row.dropdownLimit = 50; // Initial limit
+                                    });
+                                }
+                            });
+
+                            cardIdCounter = maxCardId;
+                            rowIdCounter = maxRowId;
+                            $scope.cards = draftCards;
+                            return true;
+                        }
+                    } catch (e) {
+                        console.error('Error loading draft:', e);
+                    }
+                }
+                return false;
+            }
+
+            // --- DEBOUNCED & CLEAN STATE DRAFT AUTO-SAVE ---
+            var saveDraftTimeout;
+            function cleanDraftForStorage(cards) {
+                return cards.map(function(card) {
+                    return {
+                        id: card.id,
+                        date: card.date,
+                        siteName: card.siteName,
+                        invoiceNumber: card.invoiceNumber,
+                        txnType: card.txnType,
+                        additionalNote: card.additionalNote,
+                        preUploadedFileUrl: card.preUploadedFileUrl,
+                        rows: (card.rows || []).map(function(row) {
+                            return {
+                                rid: row.rid,
+                                itemName: row.itemName,
+                                additionalDetail: row.additionalDetail,
+                                qty: row.qty,
+                                unit: row.unit,
+                                txnType: row.txnType,
+                                rate: row.rate,
+                                amount: row.amount,
+                                selectedCategory: row.selectedCategory,
+                                selectedItem: row.selectedItem ? {
+                                    name: row.selectedItem.name,
+                                    category: row.selectedItem.category,
+                                    unit: row.selectedItem.unit,
+                                    rate: row.selectedItem.rate,
+                                    secondaryUom: row.selectedItem.secondaryUom,
+                                    stock: row.selectedItem.stock,
+                                    stockSec: row.selectedItem.stockSec,
+                                    conversionFactor: row.selectedItem.conversionFactor,
+                                    rateSec: row.selectedItem.rateSec
+                                } : null,
+                                isNewItem: row.isNewItem,
+                                newItemCategory: row.newItemCategory,
+                                newItemConfirmed: row.newItemConfirmed,
+                                qty2: row.qty2,
+                                unit2: row.unit2,
+                                rate2: row.rate2,
+                                amount2: row.amount2,
+                                useSecondary: row.useSecondary
+                            };
+                        })
+                    };
+                });
+            }
+
+            function scheduleDraftSave() {
+                if (saveDraftTimeout) $timeout.cancel(saveDraftTimeout);
+                saveDraftTimeout = $timeout(function() {
+                    if (!$scope.isSubmitting && !$scope.isLoading) {
+                        var pristineCards = cleanDraftForStorage($scope.cards);
+                        localStorage.setItem('sm_cards_draft', angular.toJson(pristineCards));
+                        console.log('Draft auto-saved (pristine)');
+                    }
+                }, 800); // 800ms debounce
+                $scope.validateCardsRealTime();
+            }
+
+            $scope.$watch('cards', scheduleDraftSave, true);
+
+            function populateMockDataForSSTest(card) {
+                card.date = new Date('2026-07-10');
+                card.txnType = 'In';
+                card.siteName = '';
+                card.invoiceNumber = 'INV-000';
+                card.additionalNote = '';
+
+                var mockItem = null;
+                if ($scope.inventoryData['MT.Profile']) {
+                    mockItem = $scope.inventoryData['MT.Profile'][0];
+                }
+
+                // Row 1
+                var r1 = card.rows[0];
+                r1.itemName = '1x1 Alu. Angle Local Cora Anodised';
+                r1.selectedItem = mockItem;
+                r1.unit = 'pcs';
+                r1.rate = 80;
+                r1.qty = 20;
+                r1.amount = 1600;
+                r1.unit2 = 'kg';
+                r1.rate2 = 40;
+                r1.qty2 = 40;
+                r1.amount2 = 1600;
+                r1.useSecondary = true;
+
+                // Row 2
+                var r2 = createRow();
+                r2.itemName = '1x1 Alu. Angle Local Cora Anodised';
+                r2.selectedItem = mockItem;
+                r2.unit = 'pcs';
+                r2.rate = 80;
+                r2.qty = 20;
+                r2.amount = 1600;
+                r2.unit2 = 'kg';
+                r2.rate2 = 40;
+                r2.qty2 = 40;
+                r2.amount2 = 1600;
+                r2.useSecondary = true;
+                card.rows.push(r2);
+
+                // Row 3
+                var r3 = createRow();
+                r3.itemName = '1x1 Alu. Angle Local Cora Anodised';
+                r3.selectedItem = mockItem;
+                r3.unit = 'pcs';
+                r3.rate = 80;
+                r3.qty = 20;
+                r3.amount = 1600;
+                r3.unit2 = 'kg';
+                r3.rate2 = 40;
+                r3.qty2 = 40;
+                r3.amount2 = 1600;
+                r3.useSecondary = true;
+                card.rows.push(r3);
+            }
+
+            // ── Get all items flat ──
+            function getAllItems() {
+                var all = [];
+                Object.keys($scope.inventoryData).forEach(function (cat) {
+                    $scope.inventoryData[cat].forEach(function (item) {
+                        all.push(item);
+                    });
+                });
+                return all;
+            }
+
+            // ── Create a new row ──
+            function createRow() {
+                return {
+                    rid: ++rowIdCounter,
+                    itemName: '',
+                    additionalDetail: '',
+                    qty: null,
+                    unit: '',
+                    txnType: '',
+                    rate: null,
+                    amount: null,
+                    selectedItem: null,
+                    isNewItem: false,
+                    newItemCategory: '',
+                    newItemConfirmed: false,
+                    exactMatch: false,
+                    filteredItems: [],
+                    showItemDropdown: false,
+                    dropdownLimit: 50,
+                    qty2: null,
+                    unit2: '',
+                    rate2: null,
+                    amount2: null,
+                    useSecondary: true,
+                    rateMismatch: false,
+                    deviationPercent: 0
+                };
+            }
+
+            // ── Add Card ──
+            $scope.addCard = function (shouldScroll) {
+                var newCard = {
+                    id: ++cardIdCounter,
+                    date: new Date(),
+                    siteName: '',
+                    invoiceNumber: '',
+                    txnType: 'In',
+                    additionalNote: '',
+                    rows: [createRow()],
+                    fileObj: null,
+                    isExtracting: false,
+                    preUploadedFileUrl: '',
+                    isPending: false,
+                    filteredSites: [],
+                    showSiteDropdown: false
+                };
+
+                $scope.cards.push(newCard);
+
+                // GSAP animation
+                $timeout(function () {
+                    var el = document.getElementById('card-' + newCard.id);
+                    if (el && typeof gsap !== 'undefined') {
+                        gsap.fromTo(el,
+                            { opacity: 0, y: 30, scale: 0.97 },
+                            { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'power2.out', clearProps: 'transform' }
+                        );
+                    }
+                    if (shouldScroll && el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 50);
+            };
+
+            // ── Add Row to Card ──
+            $scope.addRow = function (card) {
+                card.rows.push(createRow());
+                $timeout(function () {
+                    var newIdx = card.rows.length - 1;
+                    var targetEl = document.querySelector('[data-cell="' + card.id + '-' + newIdx + '-1"]');
+                    if (targetEl) targetEl.focus();
+                }, 50);
+            };
+
+            // ── Remove Row ──
+            $scope.removeRow = function (card, rowIndex) {
+                if (card.rows.length > 1) {
+                    card.rows.splice(rowIndex, 1);
+                }
+            };
+
+            // ── Remove Card ──
+            $scope.removeCard = function (index) {
+                var el = document.getElementById('card-' + $scope.cards[index].id);
+                if (el && typeof gsap !== 'undefined') {
+                    gsap.to(el, {
+                        opacity: 0, y: -20, scale: 0.97, duration: 0.25, ease: 'power2.in',
+                        onComplete: function () {
+                            $timeout(function () { $scope.cards.splice(index, 1); });
+                        }
+                    });
+                } else {
+                    $scope.cards.splice(index, 1);
+                }
+            };
+
+            // ── Clear All Cards ──
+            $scope.clearAllCards = function () {
+                if ($scope.cards.length === 0) return;
+                if (!confirm('Clear all ' + $scope.cards.length + ' card(s)?')) return;
+                $scope.cards = [];
+                localStorage.removeItem('sm_cards_draft');
+                $scope.addCard(false);
+            };
+
+            // ── Refresh Data ──
+            $scope.refreshData = function () {
+                $scope.isLoading = true;
+                google.script.run.withSuccessHandler(function (data) {
+                    $timeout(function () {
+                        $scope.sites = data.sites || [];
+                        $scope.categories = data.categories || [];
+                        $scope.inventoryData = data.itemsByCategory || {};
+                        $scope.uoms = data.uoms || [];
+                        $scope.isLoading = false;
+                        
+                        clearSearchCache();
+
+                        // Update existing card rows
+                        $scope.cards.forEach(function (card) {
+                            card.rows.forEach(function (row) {
+                                if (row.selectedItem && row.selectedItem.category) {
+                                    var catItems = $scope.inventoryData[row.selectedItem.category] || [];
+                                    var freshItem = catItems.find(function (item) {
+                                        return item.name.toLowerCase() === row.selectedItem.name.toLowerCase();
+                                    });
+                                    if (freshItem) {
+                                        row.selectedItem.stock = freshItem.stock;
+                                        row.selectedItem.stockSec = freshItem.stockSec;
+                                        row.selectedItem.rate = freshItem.rate;
+                                        row.selectedItem.rateSec = freshItem.rateSec;
+                                        row.selectedItem.conversionFactor = freshItem.conversionFactor;
+                                    }
+                                }
+                            });
+                        });
+                        alert('✅ Stock data refreshed successfully!');
+                    });
+                }).withFailureHandler(function (err) {
+                    $timeout(function () {
+                        $scope.isLoading = false;
+                        alert('❌ Failed to refresh data: ' + err);
+                    });
+                }).getDropdownData();
+            };
+
+            // ── Card Total ──
+            $scope.getCardTotal = function (card) {
+                var total = 0;
+                card.rows.forEach(function (row) {
+                    total += (parseFloat(row.qty) || 0) * (parseFloat(row.rate) || 0);
+                });
+                return total;
+            };
+
+            // ── Transaction Type ──
+            $scope.setTxnType = function (card, type) {
+                card.txnType = type;
+            };
+
+            $scope.getTxnTypeClass = function (current, type) {
+                if (current !== type) return '';
+                var map = {
+                    'In': 'active-in', 'Out': 'active-out', 'Direct': 'active-direct',
+                    'Return': 'active-return', 'Repair': 'active-repair', 'Stock Adjust': 'active-adjust'
+                };
+                return map[type] || '';
+            };
+
+            // ── Site Autocomplete ──
+            $scope.filterSites = function (card) {
+                var q = (card.siteName || '').toLowerCase();
+                if (!q) { card.filteredSites = $scope.sites; return; }
+                card.filteredSites = $scope.sites.filter(function (s) {
+                    return s.toLowerCase().indexOf(q) !== -1;
+                });
+            };
+            $scope.selectSite = function (card, site) {
+                card.siteName = site;
+                card.showSiteDropdown = false;
+            };
+            $scope.hideSiteDropdown = function (card) {
+                $timeout(function () { card.showSiteDropdown = false; }, 200);
+            };
+
+            // ── Fuzzy Search Helper ──
+            function fuzzyMatch(query, text) {
+                if (!query || !text) return false;
+                var q = query.toLowerCase();
+                var t = text.toLowerCase();
+
+                if (t.indexOf(q) !== -1) return true;
+
+                var qStrip = q.replace(/[^a-z0-9]/g, '');
+                var tStrip = t.replace(/[^a-z0-9]/g, '');
+                if (qStrip && tStrip.indexOf(qStrip) !== -1) return true;
+
+                if (/^\d+$/.test(qStrip)) {
+                    var tDigits = t.replace(/[^0-9]/g, '');
+                    if (tDigits.indexOf(qStrip) !== -1) return true;
+                }
+
+                var qi = 0;
+                for (var ti = 0; ti < t.length && qi < q.length; ti++) {
+                    if (t[ti] === q[qi]) qi++;
+                }
+                return qi === q.length;
+            }
+
+            // ── Row-level Item Autocomplete with Search Memoization Cache ──
+            $scope.filterRowItems = function (card, row) {
+                var q = (row.itemName || '').trim();
+                var cat = row.selectedCategory || 'ALL';
+                var cacheKey = cat + '|||' + q.toLowerCase();
+
+                row.exactMatch = false;
+
+                // Load memoized results if present
+                if (searchCache[cacheKey]) {
+                    row.filteredItems = searchCache[cacheKey].results;
+                    row.exactMatch = searchCache[cacheKey].exactMatch;
+                    return;
+                }
+
+                var all = [];
+                if (row.selectedCategory) {
+                    all = $scope.inventoryData[row.selectedCategory] || [];
+                } else {
+                    all = getAllItems();
+                }
+
+                if (!q) { 
+                    row.filteredItems = all; 
+                    return; 
+                }
+
+                var filtered = all.filter(function (item) {
+                    return fuzzyMatch(q, item.name);
+                });
+
+                // Sort: direct substring matches first
+                var qLower = q.toLowerCase();
+                filtered.sort(function (a, b) {
+                    var aHit = a.name.toLowerCase().indexOf(qLower) !== -1 ? 0 : 1;
+                    var bHit = b.name.toLowerCase().indexOf(qLower) !== -1 ? 0 : 1;
+                    return aHit - bHit;
+                });
+
+                var exactMatch = false;
+                for (var i = 0; i < all.length; i++) {
+                    if (all[i].name.trim().toLowerCase() === q.toLowerCase()) {
+                        exactMatch = true;
+                        break;
+                    }
+                }
+
+                // Memoize search query results
+                searchCache[cacheKey] = {
+                    results: filtered,
+                    exactMatch: exactMatch
+                };
+
+                row.filteredItems = filtered;
+                row.exactMatch = exactMatch;
+            };
+
+            // ── Lazy Loading Autocomplete Scroll Trigger ──
+            $scope.loadMoreDropdownItems = function (row) {
+                row.dropdownLimit = (row.dropdownLimit || 50) + 50;
+            };
+
+            // ── Row-level Item Input Handler ──
+            $scope.onRowItemInput = function (card, row) {
+                var typed = (row.itemName || '').trim();
+                row.dropdownLimit = 50; // Reset limit
+                
+                if (!typed) {
+                    row.isNewItem = false;
+                    row.exactMatch = false;
+                    row.selectedItem = null;
+                    row.unit = '';
+                    row.rate = null;
+                    row.filteredItems = getAllItems();
+                    return;
+                }
+
+                $scope.filterRowItems(card, row);
+                row.showItemDropdown = true;
+
+                var all = row.selectedCategory ? ($scope.inventoryData[row.selectedCategory] || []) : getAllItems();
+                var found = null;
+                for (var i = 0; i < all.length; i++) {
+                    if (all[i].name.trim().toLowerCase() === typed.toLowerCase()) {
+                        found = all[i];
+                        break;
+                    }
+                }
+
+                if (found) {
+                    $scope.selectRowItem(card, row, found);
+                } else {
+                    if (!row.isNewItem) {
+                        row.selectedItem = null;
+                        row.unit = '';
+                        row.rate = null;
+                    }
+                }
+            };
+
+            $scope.onRowCategoryChange = function (card, row) {
+                if (row.selectedItem && row.selectedItem.category !== row.selectedCategory) {
+                    row.itemName = '';
+                    row.selectedItem = null;
+                    row.unit = '';
+                    row.rate = null;
+                    row.qty = null;
+                    row.amount = null;
+                    row.qty2 = null;
+                    row.rate2 = null;
+                    row.amount2 = null;
+                }
+                row.dropdownLimit = 50;
+                $scope.filterRowItems(card, row);
+            };
+
+            $scope.selectRowItem = function (card, row, item) {
+                row.itemName = item.name;
+                row.selectedItem = item;
+                row.unit = item.unit;
+                row.rate = item.rate;
+                row.isNewItem = false;
+                row.exactMatch = true;
+                row.showItemDropdown = false;
+                row.newItemCategory = item.category;
+
+                // Setup secondary unit
+                if (item.secondaryUom) {
+                    row.unit2 = item.secondaryUom;
+                    row.rate2 = item.rateSec || null;
+                    row.useSecondary = true;
+                } else {
+                    row.unit2 = '';
+                    row.rate2 = null;
+                    row.qty2 = null;
+                    row.useSecondary = false;
+                }
+
+                if (row.qty) {
+                    $scope.onQty1Change(row);
+                }
+            };
+
+            $scope.onQty1Change = function (row) {
+                if (row.selectedItem && row.selectedItem.conversionFactor) {
+                    row.qty2 = (parseFloat(row.qty) || 0) * row.selectedItem.conversionFactor;
+                }
+                $scope.syncRatesAndAmounts(row, 'qty1');
+            };
+
+            $scope.onRate1Change = function (row) {
+                $scope.syncRatesAndAmounts(row, 'rate1');
+            };
+
+            $scope.onQty2Change = function (row) {
+                if (row.selectedItem && row.selectedItem.conversionFactor && row.selectedItem.conversionFactor !== 0) {
+                    row.qty = (parseFloat(row.qty2) || 0) / row.selectedItem.conversionFactor;
+                }
+                $scope.syncRatesAndAmounts(row, 'qty2');
+            };
+
+            $scope.onRate2Change = function (row) {
+                $scope.syncRatesAndAmounts(row, 'rate2');
+            };
+
+            $scope.onAmount1Change = function (row) {
+                $scope.syncRatesAndAmounts(row, 'amount1');
+            };
+
+            $scope.onAmount2Change = function (row) {
+                $scope.syncRatesAndAmounts(row, 'amount2');
+            };
+
+            // ── Intelligent Dual-Unit Rate Matrix & Deviation warning ──
+            $scope.syncRatesAndAmounts = function (row, trigger) {
+                var qty1 = parseFloat(row.qty) || 0;
+                var rate1 = parseFloat(row.rate) || 0;
+                var qty2 = parseFloat(row.qty2) || 0;
+                var rate2 = parseFloat(row.rate2) || 0;
+
+                var conversionFactor = (row.selectedItem && row.selectedItem.conversionFactor) ? row.selectedItem.conversionFactor : 1;
+
+                var roundTo = function (num, dec) {
+                    if (isNaN(num) || !isFinite(num)) return 0;
+                    var factor = Math.pow(10, dec);
+                    return Math.round(num * factor) / factor;
+                };
+
+                if (trigger === 'qty1') {
+                    if (conversionFactor) {
+                        row.qty2 = roundTo(qty1 * conversionFactor, 4);
+                        qty2 = row.qty2;
+                    }
+                    row.amount = roundTo(qty1 * rate1, 2);
+                    row.amount2 = roundTo(qty2 * rate2, 2);
+                } else if (trigger === 'qty2') {
+                    if (conversionFactor) {
+                        row.qty = roundTo(qty2 / conversionFactor, 4);
+                        qty1 = row.qty;
+                    }
+                    row.amount = roundTo(qty1 * rate1, 2);
+                    row.amount2 = roundTo(qty2 * rate2, 2);
+                } else if (trigger === 'rate1') {
+                    row.amount = roundTo(qty1 * rate1, 2);
+                    // Provide default rate2 only if not entered yet
+                    if (rate2 === 0 || rate2 === null) {
+                        row.rate2 = roundTo(rate1 / conversionFactor, 4);
+                        rate2 = row.rate2;
+                        row.amount2 = roundTo(qty2 * rate2, 2);
+                    }
+                } else if (trigger === 'rate2') {
+                    row.amount2 = roundTo(qty2 * rate2, 2);
+                    // Provide default rate1 only if not entered yet
+                    if (rate1 === 0 || rate1 === null) {
+                        row.rate = roundTo(rate2 * conversionFactor, 4);
+                        rate1 = row.rate;
+                        row.amount = roundTo(qty1 * rate1, 2);
+                    }
+                } else if (trigger === 'amount1') {
+                    row.amount = parseFloat(row.amount) || 0;
+                    if (qty1 > 0) {
+                        row.rate = roundTo(row.amount / qty1, 4);
+                        rate1 = row.rate;
+                    }
+                    if (rate2 === 0 || rate2 === null) {
+                        row.rate2 = roundTo(rate1 / conversionFactor, 4);
+                        rate2 = row.rate2;
+                        row.amount2 = roundTo(qty2 * rate2, 2);
+                    }
+                } else if (trigger === 'amount2') {
+                    row.amount2 = parseFloat(row.amount2) || 0;
+                    if (qty2 > 0) {
+                        row.rate2 = roundTo(row.amount2 / qty2, 4);
+                        rate2 = row.rate2;
+                    }
+                    if (rate1 === 0 || rate1 === null) {
+                        row.rate = roundTo(rate2 * conversionFactor, 4);
+                        rate1 = row.rate;
+                        row.amount = roundTo(qty1 * rate1, 2);
+                    }
+                }
+
+                // Check deviation of rate matrix: impliedFactor = (Qty1 * Rate1) / (Qty2 * Rate2)
+                if (qty1 > 0 && qty2 > 0 && rate1 > 0 && rate2 > 0) {
+                    var val1 = qty1 * rate1;
+                    var val2 = qty2 * rate2;
+                    if (val2 > 0) {
+                        var impliedFactor = val1 / val2;
+                        row.impliedFactor = impliedFactor;
+                        row.rateMismatch = Math.abs(impliedFactor - 1) > 0.05;
+                        row.deviationPercent = Math.round((impliedFactor - 1) * 100 * 10) / 10;
+                    } else {
+                        row.rateMismatch = false;
+                    }
+                } else {
+                    row.rateMismatch = false;
+                }
+            };
+
+            // ── Optimistic Stock Calculation Across Unsaved Cards ──
+            $scope.getRunningStock = function (card, row, isSecondary) {
+                if (!row || !row.selectedItem) return 0;
+                var baseStock = isSecondary ? (row.selectedItem.stockSec || 0) : (row.selectedItem.stock || 0);
+                var targetName = row.selectedItem.name.toLowerCase();
+
+                var foundCurrent = false;
+                var runningDelta = 0;
+
+                for (var c = 0; c < $scope.cards.length; c++) {
+                    var curCard = $scope.cards[c];
+                    for (var r = 0; r < curCard.rows.length; r++) {
+                        var curRow = curCard.rows[r];
+
+                        if (curCard === card && curRow === row) {
+                            foundCurrent = true;
+                            break;
+                        }
+
+                        if (curRow.selectedItem && curRow.selectedItem.name.toLowerCase() === targetName) {
+                            var effectiveTxnType = curRow.txnType || curCard.txnType;
+                            var q = isSecondary ? (parseFloat(curRow.qty2) || 0) : (parseFloat(curRow.qty) || 0);
+
+                            if (effectiveTxnType === 'In' || effectiveTxnType === 'Return') {
+                                runningDelta += q;
+                            } else if (effectiveTxnType === 'Out' || effectiveTxnType === 'Repair') {
+                                runningDelta -= q;
+                            } else if (effectiveTxnType === 'Stock Adjust') {
+                                runningDelta = q - baseStock;
+                            }
+                        }
+                    }
+                    if (foundCurrent) break;
+                }
+                return baseStock + runningDelta;
+            };
+
+            $scope.formatStock = function (val) {
+                if (val === undefined || val === null) return '0';
+                var parsed = parseFloat(val);
+                if (isNaN(parsed)) return '0';
+                var str = parsed.toFixed(2);
+                return Number(str).toString();
+            };
+
+            $scope.formatQty = function (val) {
+                if (val === undefined || val === null) return '0';
+                var parsed = parseFloat(val);
+                if (isNaN(parsed)) return '0';
+                var str = parsed.toFixed(4);
+                return Number(str).toString();
+            };
+
+            $scope.parseFloat = parseFloat;
+
+            $scope.getDayTag = function (dateVal) {
+                if (!dateVal) return '';
+                var d = new Date(dateVal);
+                if (isNaN(d.getTime())) return '';
+                return '(' + d.toLocaleDateString('en-US', { weekday: 'short' }) + ')';
+            };
+
+            $scope.getTypeColor = function (type) {
+                var map = {
+                    'In': '#1f7a4d',
+                    'Out': '#b3382a',
+                    'Direct': '#2563eb',
+                    'Return': '#b8781a',
+                    'Repair': '#c0298e',
+                    'Stock Adjust': '#7c3aed'
+                };
+                return map[type] || '#888';
+            };
+
+            $scope.getCardQtyTotal = function (card) {
+                var total = 0;
+                if (!card || !card.rows) return 0;
+                card.rows.forEach(function (row) {
+                    total += parseFloat(row.qty) || 0;
+                });
+                return total;
+            };
+
+            $scope.getCardAltQtyTotal = function (card) {
+                var total = 0;
+                if (!card || !card.rows) return 0;
+                card.rows.forEach(function (row) {
+                    if (row.useSecondary) {
+                        total += parseFloat(row.qty2) || 0;
+                    }
+                });
+                return total;
+            };
+
+            $scope.getCardGrandTotal = function (card) {
+                var total = 0;
+                if (!card || !card.rows) return 0;
+                card.rows.forEach(function (row) {
+                    var amt = parseFloat(row.amount) || 0;
+                    if (amt === 0) {
+                        var qty1 = parseFloat(row.qty) || 0;
+                        var rate1 = parseFloat(row.rate) || 0;
+                        var qty2 = row.useSecondary ? (parseFloat(row.qty2) || 0) : 0;
+                        var rate2 = row.useSecondary ? (parseFloat(row.rate2) || 0) : 0;
+                        amt = qty1 > 0 ? (qty1 * rate1) : (qty2 * rate2);
+                    }
+                    total += amt;
+                });
+                return total;
+            };
+
+            $scope.hideRowItemDropdown = function (row) {
+                $timeout(function () {
+                    row.showItemDropdown = false;
+                }, 300);
+            };
+
+            $scope.showRowItemDropdownFn = function (card, row) {
+                row.dropdownLimit = 50; // Reset scroll list limit
+                row.showItemDropdown = true;
+                $scope.filterRowItems(card, row);
+            };
+
+            $scope.isCardDropdownOpen = function (card) {
+                if (card.showSiteDropdown) return true;
+                for (var i = 0; i < card.rows.length; i++) {
+                    if (card.rows[i].showItemDropdown) return true;
+                }
+                return false;
+            };
+
+            // ── Row-level New Item ──
+            $scope.markRowAsNewItem = function (card, row) {
+                row.isNewItem = true;
+                row.newItemConfirmed = false;
+                row.showItemDropdown = false;
+                row.selectedItem = null;
+                row.newItemCategory = row.selectedCategory || '';
+            };
+
+            $scope.confirmRowNewItem = function (card, row) {
+                row.newItemCategory = row.selectedCategory;
+                if (!row.newItemCategory) { alert('Please select a category'); return; }
+                if (!row.unit) { alert('Please enter a unit'); return; }
+                if (!row.rate || row.rate <= 0) { alert('Please enter a valid rate'); return; }
+                row.newItemConfirmed = true;
+            };
+
+            // ── File Upload ──
+            $scope.triggerFileUpload = function (card) {
+                document.getElementById('file-' + card.id).click();
+            };
+
+            $scope.onFileSelected = function (input) {
+                // File bind is handled by file-model directive
+            };
+
+            $scope.removeFile = function (card) {
+                card.fileObj = null;
+                card.preUploadedFileUrl = '';
+                var el = document.getElementById('file-' + card.id);
+                if (el) el.value = '';
+            };
+
+            // ── Context-Aware AI Auto-Fill ──
+            $scope.aiAutoFill = function (card) {
+                if (!card.fileObj) { alert('Please upload a bill image first'); return; }
+                card.isExtracting = true;
+
+                // Build Inventory Context items names database context
+                var inventoryContext = [];
+                Object.keys($scope.inventoryData).forEach(function (cat) {
+                    $scope.inventoryData[cat].forEach(function (item) {
+                        inventoryContext.push({ name: item.name, category: cat, unit: item.unit });
+                    });
+                });
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var base64 = e.target.result.split(',')[1];
+                    var imageData = {
+                        data: base64,
+                        mime: card.fileObj.type || 'image/jpeg',
+                        name: card.fileObj.name
+                    };
+
+                    google.script.run.withSuccessHandler(function (result) {
+                        $timeout(function () {
+                            card.isExtracting = false;
+                            if (result.invoiceNumber) card.invoiceNumber = result.invoiceNumber;
+                            if (result.date) {
+                                try {
+                                    var d = new Date(result.date);
+                                    if (!isNaN(d.getTime())) {
+                                        card.date = d;
+                                    }
+                                } catch (e) { }
+                            }
+                            if (result.items && result.items.length > 0) {
+                                card.rows = [];
+                                result.items.forEach(function (item) {
+                                    var row = createRow();
+                                    row.itemName = item.itemName || '';
+                                    row.qty = item.quantity || null;
+                                    row.unit = item.unit || '';
+                                    row.rate = item.rate || null;
+                                    row.additionalDetail = item.additionalDetail || '';
+
+                                    // Match extracted item against database
+                                    $scope.filterRowItems(card, row);
+                                    if (row.filteredItems.length > 0) {
+                                        var bestMatch = row.filteredItems[0];
+                                        if (bestMatch.name.toLowerCase() === row.itemName.toLowerCase()) {
+                                            $scope.selectRowItem(card, row, bestMatch);
+                                            row.qty = item.quantity || null;
+                                            row.rate = item.rate || row.rate;
+                                            if (row.qty) {
+                                                $scope.onQty1Change(row);
+                                            }
+                                        }
+                                    }
+                                    card.rows.push(row);
+                                });
+                            }
+                        });
+                    }).withFailureHandler(function (err) {
+                        $timeout(function () {
+                            card.isExtracting = false;
+                            alert('AI extraction failed: ' + err);
+                        });
+                    }).extractBillWithAI(imageData, $scope.aiConfig, inventoryContext);
+                };
+                reader.readAsDataURL(card.fileObj);
+            };
+
+            // ── Read File as Base64 ──
+            function readFileAsBase64(file) {
+                return $q(function (resolve, reject) {
+                    if (!file) return resolve(null);
+                    if (file.size > 5242880) { reject(file.name + ' exceeds 5MB limit'); return; }
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        resolve({
+                            name: file.name,
+                            mime: file.type || 'application/octet-stream',
+                            data: e.target.result.split(',')[1]
+                        });
+                    };
+                    reader.onerror = function () { reject('Failed to read file'); };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            $scope.clearRowError = function (row, field) {
+                if (row._errors) {
+                    delete row._errors[field];
+                    if (Object.keys(row._errors).length === 0) {
+                        row._errors = null;
+                    }
+                }
+            };
+
+            $scope.clearAllValidationErrors = function () {
+                $scope.cards.forEach(function (card) {
+                    card._hasErrors = false;
+                    card._errors = null;
+                    card._errorMessages = null;
+                    card.rows.forEach(function (row) {
+                        row._errors = null;
+                    });
+                });
+            };
+
+            // ── Real-Time Validation ──
+            $scope.validateCardsRealTime = function () {
+                if ($scope.isLoading || $scope.isSubmitting) return;
+
+                $scope.cards.forEach(function (card, i) {
+                    var cardErrors = {};
+                    var cardMessages = [];
+                    var hasCardError = false;
+
+                    var isCardDirty = card.siteName || card.invoiceNumber || card.additionalNote || card.rows.some(function (r) {
+                        return r.itemName || r.qty || r.rate || r.qty2 || r.rate2 || r.isNewItem;
+                    });
+
+                    card.rows.forEach(function (row, rIdx) {
+                        var rNum = rIdx + 1;
+                        var rowErrors = {};
+                        var effectiveTxnType = row.txnType || card.txnType;
+                        var isRowEdited = row.itemName || row.qty || row.rate || row.qty2 || row.rate2 || row.isNewItem;
+
+                        if (isRowEdited) {
+                            if (!row.itemName || !row.itemName.trim()) {
+                                rowErrors.itemName = true;
+                                cardMessages.push('Row ' + rNum + ': Item name required');
+                                hasCardError = true;
+                            }
+
+                            if (row.itemName && row.itemName.trim() && !row.isNewItem && !row.selectedItem && effectiveTxnType !== 'Direct') {
+                                rowErrors.noItem = true;
+                                cardMessages.push('Row ' + rNum + ': "' + row.itemName + '" not found — select from list or click "+ Create in Master"');
+                                hasCardError = true;
+                            }
+
+                            if (row.isNewItem && !row.newItemCategory) {
+                                rowErrors.category = true;
+                                cardMessages.push('Row ' + rNum + ': Select a category for new item "' + row.itemName + '"');
+                                hasCardError = true;
+                            }
+
+                            if (row.qty === null || row.qty === undefined || row.qty <= 0) {
+                                if (effectiveTxnType !== 'Stock Adjust') {
+                                    rowErrors.qty = true;
+                                    cardMessages.push('Row ' + rNum + ': Enter a valid quantity');
+                                    hasCardError = true;
+                                }
+                            }
+
+                            if ((effectiveTxnType === 'Out' || effectiveTxnType === 'Repair') && row.selectedItem) {
+                                var qty1 = parseFloat(row.qty) || 0;
+                                var runningStock = $scope.getRunningStock(card, row, false);
+                                if (qty1 > 0 && qty1 > runningStock) {
+                                    rowErrors.stock = true;
+                                    cardMessages.push('Row ' + rNum + ': INSUFFICIENT STOCK — ' + row.itemName +
+                                        ' has ' + $scope.formatStock(runningStock) + ' ' + (row.selectedItem.unit || '') +
+                                        ' available, you entered ' + $scope.formatStock(qty1) + ' ' + (row.selectedItem.unit || ''));
+                                    hasCardError = true;
+                                }
+                            }
+                        }
+
+                        if (Object.keys(rowErrors).length > 0) {
+                            row._errors = rowErrors;
+                        } else {
+                            row._errors = null;
+                        }
+                    });
+
+                    if (isCardDirty) {
+                        if (cardMessages.length > 0) {
+                            card._hasErrors = true;
+                            card._errors = cardErrors;
+                            card._errorMessages = cardMessages;
+                        } else {
+                            card._hasErrors = false;
+                            card._errors = null;
+                            card._errorMessages = null;
+                        }
+                    } else {
+                        card._hasErrors = false;
+                        card._errors = null;
+                        card._errorMessages = null;
+                        card.rows.forEach(function (r) { r._errors = null; });
+                    }
+                });
+            };
+
+            // ── Optimistic Submit All with Rollback ──
+            $scope.submitAll = function () {
+                if ($scope.cards.length === 0) return;
+
+                $scope.clearAllValidationErrors();
+
+                // Client-side validation checks
+                var hasAnyError = false;
+                $scope.cards.forEach(function (card, i) {
+                    var cardErrors = {};
+                    var cardMessages = [];
+
+                    if (!card.txnType) {
+                        cardErrors.txnType = true;
+                        cardMessages.push('Select a transaction type');
+                        hasAnyError = true;
+                    }
+
+                    if (card.rows.length === 0) {
+                        cardMessages.push('Add at least one item row');
+                        hasAnyError = true;
+                    }
+
+                    card.rows.forEach(function (row, rIdx) {
+                        var rNum = rIdx + 1;
+                        var rowErrors = {};
+                        var effectiveTxnType = row.txnType || card.txnType;
+
+                        if (!row.itemName || !row.itemName.trim()) {
+                            rowErrors.itemName = true;
+                            cardMessages.push('Row ' + rNum + ': Item name required');
+                            hasAnyError = true;
+                        }
+
+                        if (row.itemName && row.itemName.trim() && !row.isNewItem && !row.selectedItem && effectiveTxnType !== 'Direct') {
+                            rowErrors.noItem = true;
+                            cardMessages.push('Row ' + rNum + ': "' + row.itemName + '" not found — select from list or click "+ Create in Master"');
+                            hasAnyError = true;
+                        }
+
+                        if (row.isNewItem && !row.newItemCategory) {
+                            rowErrors.category = true;
+                            cardMessages.push('Row ' + rNum + ': Select a category for new item "' + row.itemName + '"');
+                            hasAnyError = true;
+                        }
+
+                        if (row.qty === null || row.qty === undefined || row.qty <= 0) {
+                            if (effectiveTxnType !== 'Stock Adjust') {
+                                rowErrors.qty = true;
+                                cardMessages.push('Row ' + rNum + ': Enter a valid quantity');
+                                hasAnyError = true;
+                            }
+                        }
+
+                        if ((effectiveTxnType === 'Out' || effectiveTxnType === 'Repair') && row.selectedItem) {
+                            var qty1 = parseFloat(row.qty) || 0;
+                            var runningStock = $scope.getRunningStock(card, row, false);
+                            if (qty1 > 0 && qty1 > runningStock) {
+                                rowErrors.stock = true;
+                                cardMessages.push('Row ' + rNum + ': INSUFFICIENT STOCK — ' + row.itemName +
+                                    ' has ' + $scope.formatStock(runningStock) + ' ' + (row.selectedItem.unit || '') +
+                                    ' available, you entered ' + $scope.formatStock(qty1) + ' ' + (row.selectedItem.unit || ''));
+                                hasAnyError = true;
+                            }
+                        }
+
+                        if (Object.keys(rowErrors).length > 0) {
+                            row._errors = rowErrors;
+                        }
+                    });
+
+                    if (cardMessages.length > 0) {
+                        card._hasErrors = true;
+                        card._errors = cardErrors;
+                        card._errorMessages = cardMessages;
+                    }
+                });
+
+                if (hasAnyError) {
+                    var firstErrorCard = $scope.cards.find(function (c) { return c._hasErrors; });
+                    if (firstErrorCard) {
+                        var el = document.getElementById('card-' + firstErrorCard.id);
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return;
+                }
+
+                // OPTIMISTIC UPDATE: Set pending status on cards
+                $scope.cards.forEach(function (card) {
+                    card.isPending = true;
+                });
+                $scope.isSubmitting = true;
+
+                // Load files before sending payload
+                var filePromises = $scope.cards.map(function (card) {
+                    return readFileAsBase64(card.fileObj);
+                });
+
+                $q.all(filePromises).then(function (files) {
+                    var payload = [];
+                    $scope.cards.forEach(function (card, index) {
+                        var dateObj = (card.date instanceof Date) ? card.date : new Date(card.date);
+                        var fileData = files[index] || null;
+
+                        card.rows.forEach(function (row) {
+                            var qty1 = parseFloat(row.qty) || 0;
+                            var rate1 = parseFloat(row.rate) || 0;
+                            var qty2 = row.useSecondary ? (parseFloat(row.qty2) || 0) : 0;
+                            var rate2 = row.useSecondary ? (parseFloat(row.rate2) || 0) : 0;
+                            var amt1 = qty1 * rate1;
+                            var amt2 = qty2 * rate2;
+
+                            var rateApplied = qty1 > 0 ? rate1 : (qty2 > 0 ? rate2 : 0);
+
+                            payload.push({
+                                transactionDateTime: dateObj.toISOString(),
+                                siteName: card.siteName,
+                                transactionType: row.txnType || card.txnType,
+                                category: row.isNewItem ? row.newItemCategory : (row.selectedItem ? row.selectedItem.category : (row.selectedCategory || '')),
+                                name: row.itemName,
+                                quantity: qty1,
+                                quantitySecondary: qty2,
+                                unit: row.unit,
+                                rate: rate1,
+                                unitOverride: row.isNewItem ? row.unit : null,
+                                rateOverride: rateApplied,
+                                unitSecondary: row.useSecondary ? row.unit2 : '',
+                                rateSecondary: row.useSecondary ? rate2 : 0,
+                                invoiceNumber: card.invoiceNumber,
+                                additionalDescription: row.additionalDetail,
+                                additionalNote: card.additionalNote,
+                                processedBy: $scope.userEmail,
+                                isNewItem: row.isNewItem,
+                                fileData: fileData,
+                                preUploadedFileUrl: card.preUploadedFileUrl || ''
+                            });
+                        });
+                    });
+
+                    // Server-side validate before submit
+                    google.script.run.withSuccessHandler(function (validation) {
+                        $timeout(function () {
+                            if (validation && !validation.valid && validation.errors && validation.errors.length > 0) {
+                                // Server stock validation failed: ROLLBACK pending state
+                                $scope.cards.forEach(function (card) {
+                                    card.isPending = false;
+                                });
+                                $scope.isSubmitting = false;
+
+                                validation.errors.forEach(function (e) {
+                                    $scope.cards.forEach(function (card) {
+                                        card.rows.forEach(function (row) {
+                                            var effectiveTxnType = row.txnType || card.txnType;
+                                            if (row.itemName && row.itemName.toLowerCase() === e.itemName.toLowerCase() &&
+                                                (effectiveTxnType === 'Out' || effectiveTxnType === 'Repair')) {
+                                                row._errors = row._errors || {};
+                                                row._errors.stock = true;
+                                                card._hasErrors = true;
+                                                card._errorMessages = card._errorMessages || [];
+                                                card._errorMessages.push('STOCK CONFLICT — ' + e.itemName + ': only ' +
+                                                    e.available + ' ' + (e.unit || '') + ' available now (you entered ' + e.requested + ')');
+                                            }
+                                        });
+                                    });
+                                });
+
+                                var firstErrorCard = $scope.cards.find(function (c) { return c._hasErrors; });
+                                if (firstErrorCard) {
+                                    var el = document.getElementById('card-' + firstErrorCard.id);
+                                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                                return;
+                            }
+
+                            // Submit actual transaction batch
+                            google.script.run.withSuccessHandler(function (res) {
+                                $timeout(function () {
+                                    $scope.isSubmitting = false;
+                                    alert('✅ Success! Saved all transactions.');
+                                    localStorage.removeItem('sm_cards_draft');
+                                    $scope.cards = [];
+                                    init();
+                                });
+                            }).withFailureHandler(function (err) {
+                                $timeout(function () {
+                                    // Rollback pending state on failure
+                                    $scope.cards.forEach(function (card) {
+                                        card.isPending = false;
+                                    });
+                                    $scope.isSubmitting = false;
+                                    var errMsg = err.toString();
+                                    if (errMsg.indexOf('INSUFFICIENT STOCK') !== -1) {
+                                        alert('❌ ' + errMsg + '\n\n💡 Tip: Click 🔄 Refresh to reload stock.');
+                                    } else {
+                                        alert('❌ Submission failed: ' + errMsg);
+                                    }
+                                });
+                            }).submitForm(payload);
+                        });
+                    }).withFailureHandler(function (err) {
+                        $timeout(function () {
+                            console.warn('Stock validation failed, submitting direct:', err);
+                            google.script.run.withSuccessHandler(function (res) {
+                                $timeout(function () {
+                                    $scope.isSubmitting = false;
+                                    alert('✅ Success! Saved all transactions.');
+                                    localStorage.removeItem('sm_cards_draft');
+                                    $scope.cards = [];
+                                    init();
+                                });
+                            }).withFailureHandler(function (submitErr) {
+                                $timeout(function () {
+                                    $scope.cards.forEach(function (card) {
+                                        card.isPending = false;
+                                    });
+                                    $scope.isSubmitting = false;
+                                    alert('❌ Submission failed: ' + submitErr.toString());
+                                });
+                            }).submitForm(payload);
+                        });
+                    }).validateStockAvailability(payload);
+
+                }).catch(function (err) {
+                    $timeout(function () {
+                        $scope.cards.forEach(function (card) {
+                            card.isPending = false;
+                        });
+                        $scope.isSubmitting = false;
+                        alert('File error: ' + err);
+                    });
+                });
+            };
+
+            // ── Modals ──
+            $scope.openModal = function (name) {
+                $scope.activeModal = name;
+                if (name === 'history') {
+                    $scope.loadHistory();
+                }
+            };
+            $scope.closeModal = function () {
+                $scope.activeModal = null;
+                $scope.modalData.newCategoryName = '';
+                $scope.modalData.rawJsonInput = '';
+                $scope.isCreatingCategory = false;
+                $scope.newItem = {};
+                $scope.isAddingItem = false;
+                $scope.jsonPasteTargetCard = null;
+            };
+
+            // ── AI Config Save ──
+            $scope.saveAiConfig = function () {
+                localStorage.setItem('sm_ai_config', angular.toJson($scope.aiConfig));
+                $scope.closeModal();
+                alert('✅ AI configuration saved successfully!');
+            };
+
+            // ── JSON Paste Autofill fallback ──
+            $scope.openJsonPasteModal = function (card) {
+                $scope.jsonPasteTargetCard = card;
+                $scope.modalData.rawJsonInput = '';
+                $scope.openModal('pasteJson');
+            };
+
+            $scope.copyAiPromptToClipboard = function () {
+                var promptText = "Analyze this bill/invoice image and extract the data fields into this exact JSON format. Return ONLY the valid JSON block, no markdown code fences, no extra text:\n\n" +
+                    "{\n" +
+                    "  \"invoiceNumber\": \"bill/invoice number\",\n" +
+                    "  \"date\": \"YYYY-MM-DD\",\n" +
+                    "  \"items\": [\n" +
+                    "    {\n" +
+                    "      \"itemName\": \"name of the item\",\n" +
+                    "      \"quantity\": 10,\n" +
+                    "      \"unit\": \"pcs\",\n" +
+                    "      \"rate\": 150,\n" +
+                    "      \"amount\": 1500,\n" +
+                    "      \"additionalDetail\": \"grade or extra description\"\n" +
+                    "    }\n" +
+                    "  ],\n" +
+                    "  \"totalAmount\": 1500\n" +
+                    "}";
+
+                navigator.clipboard.writeText(promptText).then(function () {
+                    alert('📋 AI Prompt copied to clipboard! You can now paste it into ChatGPT, Gemini, or Claude along with your invoice image.');
+                }).catch(function (err) {
+                    alert('Could not copy automatically. Please copy the format preview manually.');
+                });
+            };
+
+            $scope.applyJsonAutofill = function () {
+                var card = $scope.jsonPasteTargetCard;
+                if (!card) return;
+                var raw = $scope.modalData.rawJsonInput;
+                if (!raw) return;
+
+                try {
+                    var jsonStr = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                    var data = JSON.parse(jsonStr);
+
+                    if (data.invoiceNumber) {
+                        card.invoiceNumber = data.invoiceNumber;
+                    }
+                    if (data.date) {
+                        var d = new Date(data.date);
+                        if (!isNaN(d.getTime())) {
+                            card.date = d;
+                        }
+                    }
+
+                    if (Array.isArray(data.items) && data.items.length > 0) {
+                        card.rows = [];
+                        data.items.forEach(function (item) {
+                            var row = createRow();
+                            row.itemName = item.itemName || '';
+                            row.qty = item.quantity || null;
+                            row.unit = item.unit || '';
+                            row.rate = item.rate || null;
+                            row.additionalDetail = item.additionalDetail || '';
+
+                            $scope.filterRowItems(card, row);
+                            if (row.filteredItems.length > 0) {
+                                var bestMatch = row.filteredItems[0];
+                                if (bestMatch.name.toLowerCase() === row.itemName.toLowerCase()) {
+                                    $scope.selectRowItem(card, row, bestMatch);
+                                    row.qty = item.quantity || null;
+                                    row.rate = item.rate || row.rate;
+                                    if (row.qty) {
+                                        $scope.onQty1Change(row);
+                                    }
+                                }
+                            }
+                            card.rows.push(row);
+                        });
+                    }
+                    $scope.closeModal();
+                } catch (e) {
+                    alert('❌ Failed to parse JSON: ' + e.message);
+                }
+            };
+
+            // ── Create Category ──
+            $scope.createCategory = function () {
+                if (!$scope.modalData.newCategoryName) return;
+                $scope.isCreatingCategory = true;
+                google.script.run.withSuccessHandler(function (res) {
+                    $timeout(function () {
+                        $scope.categories.push(res.sheetName);
+                        $scope.inventoryData[res.sheetName] = [];
+                        $scope.isCreatingCategory = false;
+                        $scope.closeModal();
+                        alert('✅ ' + res.message);
+                    });
+                }).withFailureHandler(function (err) {
+                    $timeout(function () {
+                        $scope.isCreatingCategory = false;
+                        alert('Error: ' + err);
+                    });
+                }).addCategory($scope.modalData.newCategoryName);
+            };
+
+            // ── Add New Item to Master ──
+            $scope.submitNewItem = function () {
+                if (!$scope.newItem.itemName || !$scope.newItem.itemCategory || !$scope.newItem.itemUnit) {
+                    alert('Please fill all required fields (Name, Category, Unit).');
+                    return;
+                }
+                $scope.isAddingItem = true;
+
+                var fileInput = document.getElementById('addItemImageInput');
+                var imageFile = fileInput ? fileInput.files[0] : null;
+
+                var doSubmit = function (fileData) {
+                    var payload = {
+                        itemName: $scope.newItem.itemName,
+                        itemCategory: $scope.newItem.itemCategory,
+                        itemUnit: $scope.newItem.itemUnit,
+                        currentQty: $scope.newItem.currentQty || 0,
+                        rate: $scope.newItem.rate || 0,
+                        imageBase64: fileData ? fileData.data : null,
+                        imageMime: fileData ? fileData.mime : null,
+                        imageName: fileData ? fileData.name : null
+                    };
+
+                    google.script.run.withSuccessHandler(function (res) {
+                        $timeout(function () {
+                            if (res.item) {
+                                var cat = res.item.category;
+                                if (!$scope.inventoryData[cat]) {
+                                    $scope.inventoryData[cat] = [];
+                                }
+                                $scope.inventoryData[cat].push({
+                                    name: res.item.name,
+                                    stock: res.item.stock || 0,
+                                    unit: res.item.unit,
+                                    rate: res.item.rate || 0,
+                                    imageUrl: res.item.imageUrl || '',
+                                    category: cat
+                                });
+                            }
+                            $scope.isAddingItem = false;
+                            $scope.closeModal();
+                            clearSearchCache();
+                            alert('✅ Item added successfully!');
+                            if (fileInput) fileInput.value = '';
+                        });
+                    }).withFailureHandler(function (err) {
+                        $timeout(function () {
+                            $scope.isAddingItem = false;
+                            alert('Error adding item: ' + err);
+                        });
+                    }).addItem(payload);
+                };
+
+                if (imageFile) {
+                    readFileAsBase64(imageFile).then(function (fileData) {
+                        doSubmit(fileData);
+                    }).catch(function (err) {
+                        $scope.isAddingItem = false;
+                        alert('Image error: ' + err);
+                    });
+                } else {
+                    doSubmit(null);
+                }
+            };
+
+            // ── Load History ──
+            $scope.loadHistory = function () {
+                google.script.run.withSuccessHandler(function (data) {
+                    $timeout(function () {
+                        $scope.recentTransactions = data || [];
+                    });
+                }).withFailureHandler(function (err) {
+                    $timeout(function () {
+                        $scope.recentTransactions = [];
+                    });
+                }).getRecentTransactions(50);
+            };
+
+            // ── Dark Mode ──
+            $scope.toggleDarkMode = function () {
+                $scope.isDarkMode = !$scope.isDarkMode;
+                localStorage.setItem('sm_dark', $scope.isDarkMode);
+            };
+
+            // ── Keyboard Shortcuts ──
+            document.addEventListener('keydown', function (e) {
+                // Ctrl+N: Add card
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    $timeout(function () { $scope.addCard(true); });
+                }
+                // Ctrl+Enter: Submit
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    $timeout(function () { $scope.submitAll(); });
+                }
+                // Ctrl+D: Dark mode
+                if (e.ctrlKey && e.key === 'd') {
+                    e.preventDefault();
+                    $timeout(function () { $scope.toggleDarkMode(); });
+                }
+                // Ctrl+K: Shortcuts
+                if (e.ctrlKey && e.key === 'k') {
+                    e.preventDefault();
+                    $timeout(function () { $scope.openModal('shortcuts'); });
+                }
+                // Escape: Close modal
+                if (e.key === 'Escape') {
+                    $timeout(function () {
+                        if ($scope.activeModal) $scope.closeModal();
+                    });
+                }
+            });
+
+            // ── Initialize ──
+            init();
+
+        }]);
+    </script>
+</body>
+
+</html>

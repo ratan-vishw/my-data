@@ -1,0 +1,35 @@
+body {
+  background-color: #086788;
+  font-family: Arial;
+  padding: 0px;
+  margin: 0px;
+}
+#header_txt {
+  color: #dd1c1a;
+  text-align: center;
+}
+#box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#button_container {
+  width: 200px;
+  height: 200px;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+.tik_tak_button {
+  width: 55px;
+  height: 63px;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  border-radius: 10px;
+  border-style: none;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}

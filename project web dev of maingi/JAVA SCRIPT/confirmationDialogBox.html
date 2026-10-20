@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h2>
+    Example of confirm box..
+  </h2>
+  <button onclick="myconfirmation()">
+    Confirm it.
+  </button>
+  <h2><p id="try_it"></p></h2>
+  <script>
+    function myconfirmation(){
+      let txt;
+      if (confirm("Do you want to comfirm ?")){
+        txt = "user want to comfirm!";
+      }
+      else {
+        txt = "user don't want to confirm!"
+      }
+      document.getElementById("try_it").innerHTML = txt;
+    }
+  </script>
+</body>
+</html>

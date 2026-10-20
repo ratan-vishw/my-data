@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="ang.js"> </script>
+</head>
+<body ng-app="myApp">
+  <div ng-controller="myCtrl">
+    <p>{{ firstName + " " + lastName }}</p>
+  </div>
+
+  <script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function($scope) {
+      $scope.firstName = "John";
+      $scope.lastName = "Doe";
+    });
+  </script>
+</body>
+</html>

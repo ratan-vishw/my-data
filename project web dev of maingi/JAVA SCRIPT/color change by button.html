@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      background-color: cadetblue;
+      font-family: Roboto;
+    }
+    button {
+      font-weight: bolder;
+      background-color: rgb(0, 0, 0);
+      color: aliceblue;
+      border-radius: 20em;
+      border-style: solid;
+    &:hover{
+      opacity: 0.6;
+    }
+    }
+    red-text {
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+  <button class="button-click-me">Click Me</button>
+  <h2 class="text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem cumque nisi, provident inventore optio nobis, a eligendi suscipit magnam ad beatae atque? Officiis hic et ipsa incidunt soluta minima deleniti?</h2>
+
+  <script>
+    const click = document.querySelector('.button-click-me');
+    const text = document.querySelector('.text');
+    let color = false; 
+    click.addEventListener("click", function(){
+      console.log(`hello`)
+      color = !color;
+      if (!color){
+        text.style.color = "red";
+      }else{ 
+        text.style.color = "black";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    section {
+      padding: 20px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+
+    section:target {
+      background-color: lightyellow;
+      border-color: orange;
+      font-weight: bold;
+    }
+  </style>
+  <title>:target Example</title>
+</head>
+<body>
+
+  <h1>Sections</h1>
+  <nav>
+    <a href="#section1">Go to Section 1</a>
+    <a href="#section2">Go to Section 2</a>
+    <a href="#section3">Go to Section 3</a>
+    <a href="#sec4" >for section 4</a>
+  </nav>
+
+  <section id="section1">
+    <h2>Section 1</h2>
+    <p>This is Section 1. Click on the links to highlight it.</p>
+  </section>
+
+  <section id="section2">
+    <h2>Section 2</h2>
+    <p>This is Section 2. It will change style when targeted.</p>
+  </section>
+
+  <section id="section3">
+    <h2>Section 3</h2>
+    <p>This is Section 3. It will also change style when targeted.</p>
+  </section>
+
+  <div id="sec4">
+    <h2>sec 4</h2>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit neque voluptates dolorum, sit porro dolore corrupti eligendi molestiae. Harum temporibus aliquid corporis quia aut veritatis qui, reprehenderit provident expedita praesentium!</p>
+  </div>
+
+</body>
+</html>

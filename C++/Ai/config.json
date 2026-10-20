@@ -1,0 +1,54 @@
+{
+    "model": {
+        "embed_dim": 128,
+        "num_heads": 4,
+        "num_layers": 4,
+        "max_seq_len": 256,
+        "ff_multiplier": 4,
+        "dropout": 0.1,
+        "vocab_size": 0
+    },
+    "training": {
+        "learning_rate": 0.0003,
+        "batch_size": 4,
+        "num_workers": 8,
+        "max_epochs": 1000,
+        "checkpoint_every": 500,
+        "log_every": 10,
+        "grad_clip": 1.0,
+        "warmup_steps": 500,
+        "weight_decay": 0.01
+    },
+    "neuron": {
+        "num_dendrites": 4,
+        "membrane_decay": 0.9,
+        "firing_threshold": 0.5,
+        "refractory_steps": 2,
+        "stdp_rate": 0.01,
+        "hebbian_rate": 0.005,
+        "prune_threshold": 0.001,
+        "sprout_probability": 0.01
+    },
+    "neurogenesis": {
+        "saturation_threshold": 0.8,
+        "max_neurons_per_layer": 512,
+        "max_layers": 12,
+        "growth_check_interval": 1000,
+        "neurons_to_add": 8,
+        "enabled": true
+    },
+    "memory": {
+        "max_long_term": 10000,
+        "max_episodes": 1000,
+        "similarity_threshold": 0.3,
+        "consolidation_interval": 5000
+    },
+    "paths": {
+        "training_data": "data/training",
+        "checkpoints": "models/checkpoints",
+        "vocab": "models/vocab.bin",
+        "long_term_memory": "memory/long_term",
+        "episodic_memory": "memory/episodes",
+        "logs": "logs"
+    }
+}

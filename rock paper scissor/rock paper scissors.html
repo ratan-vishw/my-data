@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta lang="en">
+    <title>
+      ROCK PAPER SCISSORS.
+    </title>
+    <style>
+      * {
+        margin: 0;
+        font-family: Arial;
+        text-align: center;
+      }
+      body {
+        background-color: rgb(83, 96, 102);
+      }
+      h2 {
+        font-size: 50px;
+        margin-bottom: 30px;
+      }
+      .contain {
+        margin-bottom: 30px;
+      }
+      button img {
+        height: 100px;
+        pointer-events: none;
+      }
+      .contain button {
+        padding: 8px;
+        border-radius: 50%;
+        border-style: solid;
+        background-color: transparent;
+        border-width: 5px;
+        border-color: white;
+        cursor: pointer;
+        transition:hover 0.5s;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+      p {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+
+      button {
+        background-color: transparent;
+        padding: 10px;
+        border-style: solid;
+        border-color: white;
+        color: rgb(241, 241, 241);
+        font-weight: bold;
+        font-size: 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition:hover 0.5s;
+        &:hover {
+          opacity: 0.9;
+          box-shadow: 0, 10px, 20px, rgba(255, 255, 255, 0.8);
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div>
+      <div>
+        <h2>
+          GAME...
+        </h2>
+      </div>
+      
+      <div>
+        <div class="contain">
+          <button onclick="StartGame(`ROCK`)">
+            <img src="images/rock-emoji.png">
+          </button>
+          <button onclick="StartGame(`PAPER`)">
+            <img src="images/paper-emoji.png">
+          </button>
+          <button onclick="StartGame(`SCISSORS`)">
+            <img src="images/scissors-emoji.png">
+          </button>
+        </div>
+        <div>
+          <p class="scoreChoice">
+          
+          </p>
+          <p class="Choices">
+            
+          </p>
+          <p class="scoreText">
+            
+          </p>
+        </div>
+        <div>
+          <button onclick="resetresult()">
+            Reset Result
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      let computerchoice;
+      let result = {
+        win: 0,
+        losses: 0,
+        ties: 0
+      };
+      showresult()
+      let popup;
+      function StartGame(user){
+        let computer = Math.random();
+        if (computer >= 0 && computer < 1/3){
+          computerchoice = `ROCK`;
+        }else if (computer >= 1/3 && computer < 1/2){
+          computerchoice = `PAPER`;
+        }else if (computer >= 1/2 && computer <= 1){
+          computerchoice = `SCISSORS`;
+        }
+        if (computerchoice === user){
+          result.ties += 1;
+          popup = `TIES`;
+        }else if (computerchoice === `ROCK` && user === `SCISSORS`  || computerchoice === `PAPER` && user === `ROCK` || computerchoice === `SCISSORS` && user === `PAPER` ){
+          result.losses += 1;
+          popup = `YOU LOSS!`;
+        }else {
+          result.win += 1;
+          popup = `YOU WIN !`;
+        }
+        localStorage.setItem('result',JSON.stringify(result));
+        showresult();
+        document.querySelector(".scoreChoice").textContent = popup;
+
+        
+        document.querySelector(".Choices").textContent = (`You: ${user } - Computer: ${computerchoice}`);
+      }
+
+      
+      function showresult(){
+        let saveresult = JSON.parse(localStorage.getItem('result'));
+        document.querySelector(".scoreText").textContent = (`score: \nWins: ${saveresult.win}\nLosses: ${saveresult.losses}\nTies:  ${saveresult.ties}`);;
+      }
+      
+       function resetresult(){
+        Object.assign(result, {win: 0, losses: 0, ties: 0});
+        localStorage.setItem('result',JSON.stringify(result));
+        showresult()
+      }
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Background Attachment Example</title>
+  <style>
+    /* Scroll */
+    .scroll {
+      background-image: url('image.jpg');
+      background-attachment: scroll;
+      background-size: cover;
+      height: 400px;
+    }
+
+    /* Fixed */
+    .fixed {
+      background-image: url('image.jpg');
+      background-attachment: fixed;
+      background-size: cover;
+      height: 400px;
+    }
+
+    /* Local */
+    .local {
+      background-image: url('image.jpg');
+      background-attachment: local;
+      background-size: cover;
+      height: 200px;
+      overflow: scroll;
+    }
+  </style>
+</head>
+<body>
+  <div class="scroll">Scroll Background</div>
+  <div class="fixed">Fixed Background</div>
+  <div class="local">Local Background (scrollable)</div>
+</body>
+</html>

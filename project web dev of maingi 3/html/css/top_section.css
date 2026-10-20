@@ -1,0 +1,158 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+  padding-bottom: 1000px;
+}
+
+/* Head Section */
+.head_section {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto; /* Allow flexible height */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#head_h1 img {
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.head_section h1 {
+  text-align: center;
+  width: 100%;
+  margin: 0;
+}
+
+/* Container Section */
+#b_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  width: 100%;
+}
+
+#b_container #b_1 {
+  flex-grow: 1; /* Allow section to grow */
+  width: 100%;
+  height: auto; /* Adjust height */
+  border-radius: 5px; 
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#b_1 button {
+  margin: 2px; 
+  width: 130px; 
+  background-color: #69A197;
+  color: black;
+  border-radius: 15px;
+  border: 2px solid black;
+  font-weight: bolder;
+  font-size: 14px; /* Set font-size explicitly */
+  padding: 5px 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.15s, background-color 0.2s; /* Smooth transitions */
+}
+
+#b_1 button:hover {
+  opacity: 0.9;
+  color: #69A197;
+  background-color: black;
+}
+
+#b_1 button:active {
+  color: #f9f9f9;
+}
+
+/* Images Section */
+#images_1 {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  width: 100%; /* Ensure it covers full width */
+}
+
+/* Social Button Styling */
+.social_b {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.social_b button {
+  border-radius: 50%;
+  border: solid;
+  border-width: 3px;;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.social_b img {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Navigation */
+nav {
+  background-color: #333;
+  overflow: hidden;
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav a {
+  color: white;
+  padding: 5px 10px; /* Better spacing for links */
+  text-align: center;
+  text-decoration: none;
+  font-size: 12px;
+  transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+nav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Redirect Section */
+#redirect_a {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Center content */
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 600px) {
+  #b_container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #b_1 button {
+    width: 100px;
+  }
+
+  nav a {
+    font-size: 10px;
+  }
+}

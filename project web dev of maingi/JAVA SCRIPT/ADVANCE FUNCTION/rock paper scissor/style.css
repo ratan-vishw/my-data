@@ -1,0 +1,77 @@
+* {
+  margin: 0;
+  font-family: Arial;
+  text-align: center;
+}
+body {
+  background-color: rgb(83, 96, 102);
+}
+h2 {
+  font-size: 50px;
+  margin-bottom: 30px;
+}
+.contain {
+  margin-bottom: 30px;
+}
+button img {
+  height: 100px;
+  pointer-events: none;
+  object-fit: cover;
+}
+.contain button {
+  padding: 8px;
+  border-radius: 50%;
+  border-style: solid;
+  background-color: transparent;
+  border-width: 5px;
+  border-color: white;
+  cursor: pointer;
+  transition:hover 0.5s;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+p {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.result_img {
+  height: 3em;
+}
+
+.reset-result {
+  background-color: transparent;
+  padding: 10px;
+  border-style: solid;
+  border-color: white;
+  color: rgb(241, 241, 241);
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  width: 150px;
+  transition:hover 0.5s;
+  &:hover {
+    opacity: 0.9;
+    box-shadow: 0, 10px, 20px, rgba(255, 255, 255, 0.8);
+  }
+}
+
+.auto-play-button {
+  background-color: transparent;
+  padding: 10px;
+  border-style: solid;
+  border-color: white;
+  color: rgb(241, 241, 241);
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  width: 150px;
+  transition:hover 0.5s;
+  &:hover {
+    opacity: 0.9;
+    box-shadow: 0, 10px, 20px, rgba(255, 255, 255, 0.8);
+  }
+}

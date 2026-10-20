@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Container with overflow-x: visible */
+    .visible-container {
+      width: 200px;
+      overflow-x: visible;
+      border: 1px solid #000;
+      margin-bottom: 20px;
+    }
+
+    /* Container with overflow-x: hidden */
+    .hidden-container {
+      width: 200px;
+      overflow-x: hidden;
+      border: 1px solid #000;
+      margin-bottom: 20px;
+    }
+
+    /* Container with overflow-x: scroll */
+    .scroll-container {
+      width: 200px;
+      overflow-x: scroll;
+      border: 1px solid #000;
+      margin-bottom: 20px;
+    }
+
+    /* Container with overflow-x: auto */
+    .auto-container {
+      width: 200px;
+      overflow-x: auto;
+      border: 1px solid #000;
+    }
+
+    /* Add long content for overflowing */
+    .content {
+      white-space: nowrap; /* Prevents wrapping, forces horizontal overflow */
+    }
+  </style>
+  <title>Overflow X Example</title>
+</head>
+<body>
+
+  <h1>Overflow X Property Examples</h1>
+
+  <div class="visible-container">
+    <div class="content">This is a very long sentence that will overflow the container horizontally and remain visible.</div>
+  </div>
+
+  <div class="hidden-container">
+    <div class="content">This is a very long sentence that will overflow the container horizontally but will be hidden.</div>
+  </div>
+
+  <div class="scroll-container">
+    <div class="content">This is a very long sentence that will overflow the container horizontally, and a scrollbar will always be shown.</div>
+  </div>
+
+  <div class="auto-container">
+    <div class="content">This is a very long sentence that will overflow the container horizontally and will show a scrollbar only if necessary.</div>
+  </div>
+
+  <div>
+    hello
+  </div>
+</body>
+</html>

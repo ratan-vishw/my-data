@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      
+    }
+    th {
+      padding: 5px;
+    }
+    tr {
+      height: 50;
+      width: 100;
+    }
+    td {
+      height: 50;
+      width: 100;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <table border=1>
+    <tr>
+      <th>Sr.No.</th>
+      <th>Stu.Name</th>
+      <th>Roll No.</th>
+      <th>DOB</th>
+      <th>Address</th>
+      <th>Father's Name</th>
+      <th>Mother's Name</th>
+      <th>Class</th>
+      <th>Course</th>
+    </tr>
+    <script>
+      let n = parseInt(prompt("Enter number of student: "))
+      for (var i=1;i<=n;i++)
+      {
+        document.write(`<tr><td><textarea cols="1" padding="7px"></textarea></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`)
+    }
+    </script>
+  </table>
+  
+</body>
+</html>

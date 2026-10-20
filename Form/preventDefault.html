@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prevent Enter Key</title>
+</head>
+<body>
+
+  <form id="myForm">
+    <input type="text" name="username" placeholder="Enter your username">
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    document.getElementById('myForm').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Prevents form submission on "Enter" key
+        console.log('Enter key was pressed, but form submission was prevented.');
+      }
+    });
+  </script>
+
+</body>
+</html>
+``

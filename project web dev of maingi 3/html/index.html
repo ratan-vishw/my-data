@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="css/general.css">
+  <link rel="stylesheet" href="css/top_section.css">
+  <link rel="stylesheet" href="IMAGE SLIDER/img_slider.css">
+  <link rel="stylesheet" href="quiry/quiry.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+  <div>
+    <div class="head_section">
+      <div id="head_h1">
+        <h1>
+         <img src="images/IMG_20241018_122018.png">
+        </h1>
+      </div>
+      <div>
+    
+      </div>
+      <div>
+    </div>
+    <div id="b_container">
+      <div id="images_1">
+        <div class="social_b">
+          <button>
+            <img src="images/download (1).png">
+          </button>
+        </div>
+        <div class="social_b">
+          <button>
+            <img src="images/fb.png">
+          </button>
+        </div>
+        <div class="social_b">
+          <button>
+            <img src="images/insta.png">
+          </button>
+        </div>
+        <div class="social_b">
+          <button>
+            <img src="images/yt.png">
+          </button>
+        </div>
+        <div id="b_1">
+          <div>
+            <button>BRANCH LOGIN</button>
+          </div>
+          <div>
+            <button>STUDENT LOGIN</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Tool tips-->
+    <div id="redirect_a">
+      <nav>
+        <a href="#about">About Us</a>
+        <a href="#courses">Courses</a>
+        <a href="#exams">Exams</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#feedback">Feedback</a>
+        <a href="#registration">Student Registration</a>
+        <a href="#contact">Contact Us</a>
+      </nav>
+    </div>
+  
+  </div>
+
+
+
+
+  <div class="mid_section">
+    <div class="mid_img">
+      <div class="slider">
+        <div class="slides">
+            <div class="slide"><img src="IMAGE SLIDER/fb.png" alt="Image 1"></div>
+            <div class="slide"><img src="IMAGE SLIDER/insta.png" alt="Image 2"></div>
+            <div class="slide"><img src="IMAGE SLIDER/yt.png" alt="Image 3"></div>
+        </div>
+        <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+        <button class="next" onclick="moveSlide(1)">&#10095;</button>
+      </div>
+    </div>
+
+    <div id="about_section">
+      <header>
+        <h1>Welcome to Maingi Commercial College</h1>
+    </header>
+    <section>
+        <p>
+            Maingi Commercial College is your premier destination for Computer Tuition Classes tailored for O-Level and A-Level students. Our comprehensive Computer Course Curriculum (CCC) equips learners with essential skills in programming, web development, and digital literacy. Our expert instructors are dedicated to providing personalized attention, ensuring that each student grasps complex concepts with ease. 
+        </p>
+        <p>
+            At Maingi Commercial College, we foster a supportive learning environment that encourages collaboration and creativity. Our state-of-the-art facilities and resources enable students to engage in hands-on projects, enhancing their understanding of real-world applications. Whether you aim to enhance your academic performance or prepare for future career opportunities, our tailored courses cater to all skill levels. 
+        </p>
+        <p>
+            Join us today to embark on your journey toward mastering computer skills that are vital in today’s digital world. Discover your potential at Maingi Commercial College, where learning meets innovation!
+        </p>
+    </section>
+    </div>
+  
+    <div class="quiry_container">
+      <h2>Quick Enquiry Form</h2>
+      <form id="enquiryForm">
+          <div class="form-group">
+              <label for="firstName">First Name:</label>
+              <input type="text" id="firstName" name="firstName" required>
+          </div>
+          <div class="form-group">
+              <label for="lastName">Last Name:</label>
+              <input type="text" id="lastName" name="lastName" required>
+          </div>
+          <div class="form-group">
+              <label for="phone">Phone No:</label>
+              <input type="tel" id="phone" name="phone" required>
+          </div>
+          <div class="form-group">
+              <label for="secondPhone">Alternate Phone No (Optional):</label>
+              <input type="tel" id="secondPhone" name="secondPhone">
+          </div>
+          <div class="form-group">
+              <label for="address">Address:</label>
+              <textarea id="address" name="address" required></textarea>
+          </div>
+          <div class="form-group">
+              <label for="course">Course:</label>
+              <input type="text" id="course" name="course" required>
+          </div>
+          <div class="form-group">
+              <label for="query">Query:</label>
+              <textarea id="query" name="query" required></textarea>
+          </div>
+          <div class="form-group">
+              <label for="captcha">CAPTCHA: 5 + 3 = ?</label>
+              <input type="text" id="captcha" name="captcha" required>
+          </div>
+          <div class="form-buttons">
+              <button type="reset">Reset</button>
+              <button type="submit">Submit</button>
+          </div>
+      </form>
+  </div>
+  </div>
+  
+
+<script src="IMAGE SLIDER/script.js"></script>
+</body>
+</html>

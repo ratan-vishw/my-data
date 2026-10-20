@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Example with AJAX</title>
+  <style>
+    #success-message {
+      display: none;
+      color: green;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    #error-message {
+      display: none;
+      color: red;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Form Submission Example</h2>
+  <form id="myForm" onsubmit="callFun(event)">
+    <label for="username">Enter your name:</label>
+    <input type="text" id="username" name="username" required><br><br>
+    
+    <label for="email">Enter your email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+
+    <input type="submit" value="Submit">
+  </form>
+
+  <div id="success-message">Your data will be successfully submitted.</div>
+  <div id="error-message">There was an error with the form submission.</div>
+
+  <script type="text/javascript">
+    function callFun(event) {
+      event.preventDefault();  // Prevent form submission to the server
+
+      // Get form data
+      const formData = new FormData(document.getElementById('myForm'));
+
+      // Send the form data to the server via Fetch API (AJAX)
+      fetch('backend.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())  // Parse the JSON response from the server
+      .then(data => {
+        // Hide success/error messages initially
+        document.getElementById('success-message').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+
+        // Check if the server responded with a success message
+        if (data.status === 'success') {
+          document.getElementById('success-message').style.display = 'block'; // Show success message
+          console.log('Server response:', data); // Optionally log the response
+        } else {
+          document.getElementById('error-message').style.display = 'block'; // Show error message
+          console.error('Server error:', data); // Log error message
+        }
+      })
+      .catch(error => {
+        // Handle any errors in the fetch process
+        document.getElementById('error-message').style.display = 'block';
+        console.error('AJAX Error:', error);
+      });
+    }
+  </script>
+
+</body>
+</html>

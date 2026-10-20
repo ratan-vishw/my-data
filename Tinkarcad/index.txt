@@ -1,0 +1,63 @@
+#include <Keypad.h>
+
+// Define keypad configuration
+const byte ROWS = 4; // Four rows
+const byte COLS = 4; // Four columns
+char keys[ROWS][COLS] = {
+  {'1', '2', '3', 'A'},
+  {'4', '5', '6', 'B'},
+  {'7', '8', '9', 'C'},
+  {'*', '0', '#', 'D'}
+};
+byte rowPins[ROWS] = {9, 8, 7, 6}; // Connect to the row pinouts of the keypad
+byte colPins[COLS] = {5, 4, 3, 2}; // Connect to the column pinouts of the keypad
+
+// Initialize keypad
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+// Define pin connections for LEDs and buzzer
+int redLed = 10;
+int greenLed = 11;
+int buzzer = 12;
+
+void setup() {
+  // Set up LEDs and buzzer as outputs
+  pinMode(redLed, OUTPUT);
+  pinMode(greenLed, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+  
+  // Start serial communication
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Get the key pressed
+  char key = keypad.getKey();
+  
+  // If a key is pressed
+  if (key) {
+    Serial.println(key); // Print the key value to the serial monitor
+    
+    // Example logic for different key presses
+    switch (key) {
+      case '1': // Turn on red LED
+        digitalWrite(redLed, HIGH);
+        break;
+      case '2': // Turn on green LED
+        digitalWrite(greenLed, HIGH);
+        break;
+      case 'A': // Activate the buzzer for a short period
+        tone(buzzer, 1000); // Set frequency to 1000Hz
+        delay(500);
+        noTone(buzzer);      // Stop the tone after 500ms
+        break;
+      case '*': // Turn off all LEDs
+        digitalWrite(redLed, LOW);
+        digitalWrite(greenLed, LOW);
+        break;
+      default: // Turn off buzzer for any other key
+        noTone(buzzer);
+        break;
+    }
+  }
+}

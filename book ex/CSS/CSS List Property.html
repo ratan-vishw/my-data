@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List property in CSS</title>
+  <style>
+    ul.a {
+      list-style-type: circle;
+      border: 1px;
+      /*list-style-image: url("pic.jpg");*/
+    }
+    ul.b {
+      list-style-type:square;
+    }
+    ol.c {
+      list-style-type: upper-roman;
+    }
+    ol.d {
+      list-style-type: lower-greek;
+    }
+    .list li {
+      border-style: solid;
+      border-width: 1px;
+      list-style-position: outside;
+    }
+
+  </style>
+</head>
+<body>
+  <h2>The list-style-type property-></h2>
+  <p>Example of unordered list: </p>
+  <ul class="a">
+    <tr>
+      <li>java</li>
+      <li>oracle</li>
+      <li>net</li>
+    </tr>
+  </ul>
+
+  <ul class="b">
+    <tr>
+      <li>PHP</li>
+      <li>ASP</li>
+      <li>DHTML</li>
+    </tr>
+  </ul>
+
+  <P>Example of ordered list: </P>
+  <ol class="c">
+    <tr>
+      <li>HTML</li>
+      <li>SGML</li>
+      <li>XML</li>
+    </tr>
+  </ol>
+  
+  <ol class="d">
+    <tr>
+      <li>Balaji</li>
+      <li>Venkatesa</li>
+      <li>Tiurmalesa</li>
+    </tr>
+  </ol>
+
+  <ol class="list">
+    <li>outside the list item</li>
+    <li>java</li>
+    <li>oracle</li>
+  </ol>
+</body>
+</html>

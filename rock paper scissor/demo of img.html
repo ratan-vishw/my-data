@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    img {
+      height: 100px;
+      
+    }
+  </style>
+  <script>
+    function pic(n)
+    {
+      let imgSrc = document.querySelector(n).src;
+      document.getElementById('im').innerHTML = '<img src='+imgSrc+'>';
+    }
+  </script>
+</head>
+<body>
+
+  <button>
+    <img src="images/rock-emoji.png" class="a" onclick="pic(`.a`)">
+  </button>
+
+  <button><img src="images/paper-emoji.png" 
+    class="b" onclick="pic(`.b`)"></button>
+
+  <img src="images/scissors-emoji.png">
+  <div id="im"></div>
+</body>
+</html>

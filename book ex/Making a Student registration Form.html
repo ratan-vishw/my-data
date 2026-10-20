@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <form>
+    <h2>STUDENT REGISTRATION FORM...</h2><br>
+    <table border="1" cellpadding="10px" >
+      <tr>
+        <td>NAME</td>
+        <td><input type="text" maxlength="30"> (max 30 characters A-Z a-z)</td>
+      </tr>
+      <tr>
+        <td>Course Applied For</td>
+        <td>
+          <select name="Course">
+            <option value="not-selected">--select--</option>
+            <option value="BCA">BCA</option>
+            <option value="MCA">MCA</option>
+            <option value="O-LEVEL">O-LEVEL</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>GENDER</td>
+        <td><input type="radio" value="Male" name="Gender">Male,
+        <input type="radio" value="Female" name="Gender">Female</td>
+      </tr>
+      <tr>
+        <td>ADDRESS</td>
+        <td><textarea name="ADDRESS" rows="3" cols="30"></textarea></td>
+      </tr>
+      <tr>
+        <td>COUNTRY</td>
+        <td><input type="text" name="country" ></td>
+      </tr>
+      <tr>
+        <td>HOBBIES</td>
+        <td>
+          Drawing<input type="checkbox" value="drawing">,
+          Singing<input type="checkbox"
+          value="Singing">,
+          Dancing<input type="checkbox"
+          value="Dancing">,
+          Sketching<input type="checkbox" value="Sketching">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <input type="submit" value="submit">
+          <input type="reset" value="reset">
+        </td>
+      </tr>
+    </table>
+  </form>
+</body>
+</html>

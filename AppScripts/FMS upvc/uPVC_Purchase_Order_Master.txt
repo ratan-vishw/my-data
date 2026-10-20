@@ -1,0 +1,7 @@
+PO ID,Quotation ID,Client / Site Name,PO Date,Location,Vendor Name,Variant,Mesh / Jaali,Glass Specs,Total Item Qty,Lead Time (Days),Rough Sizes,Vendor Quote,Vendor Amount,Our Quote,Our Amount,PO Order,Bills,Bills AMT
+PO-UPVC-0001,,Surya shyam  LOT-4,2025-09-06,https://maps.app.goo.gl/ygBciPLNqutq3gut5,NCL,"3 Track, Sliding",Nylon Mesh,"5mm, Clear, Toughened",259,10,https://drive.google.com/open?id=176kTDkhfod6f6C6wMKrApnpPA752RjQt,https://drive.google.com/open?id=1dfLCCNIJa9-fb63Q6mPpKJsJCvj0pujW,,,,,,
+PO-UPVC-0002,,Mr. V.C Mishra ( G.I),2026-05-06,,NCL,Door Frames,Yes,"5 mm, Clear, Toughened",15,5,https://drive.google.com/open?id=1S06oFXjnO5cZQIxhexF3PWsJjaYXzU6q,,,,,,,
+PO-UPVC-0003,,Basti Forensic Lab,2026-05-12,https://maps.app.goo.gl/SJYVxD3rNsWmDvex5?g_st=aw,Poonam Alu.,,None,"5 mm, Clear, Toughened",54,15,https://drive.google.com/open?id=1FLr156KqQlWSvdsGrYCCsh1zCYlRcaP8,,,,,,,
+PO-UPVC-0004,,Shashank Pandey Ji,2026-09-25,,Poonam Alu.,"3 Track, Sliding",Nylon Mesh,"5mm, Clear, Toughened",1,5,https://drive.google.com/open?id=1q3jLb1YgmEJpiX7fRiPcBJc6LZo0xwUf,,,,,,,
+PO-UPVC-0005,,Vikas Khanna Ji,2026-09-25,,Poonam Alu.,"2 Track, Door Frames, Sliding",None,"5mm, Clear, Toughened",4,5,https://drive.google.com/open?id=1uRNPQ3TGfghWOHiYYrUiPqLck2weLlBq,,,,,,,
+PO-UPVC-0006,,Mr. Neeraj Suri,2026-09-30,,Poonam Alu.,"2 Track, 3 Track, Sliding",Nylon Mesh,"5mm, Clear, Toughened",23,7,https://drive.google.com/open?id=1otmsSUXNNwQ1treoLH84nJAD1aosTnJo,https://drive.google.com/open?id=1IBGpY_MAd0vWrwkji1xbSb7LUaV__grl,,,,,,

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    [type="text"] {
+      border: 2px solid blue;
+    }
+    /*^ for starting*/
+    [href^="https"] {
+      color: green;
+    }
+    /*$ for ending*/
+    [src$=".jpg"] {
+      border: 2px solid red;
+    }
+    [title*="flower"] {
+      color: purple;
+    }
+  </style>
+</head>
+<body>
+  <input type="text" placeholder="Enter text here">
+  <a href="https://www.example.com">Link to example</a>
+  <img src="flower.jpg" title="A beautiful flower">
+  <p title="flower bed">This is a flower bed </p>
+</body>
+</html>

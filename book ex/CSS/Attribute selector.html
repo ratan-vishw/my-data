@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      padding-bottom: 1000px;
+    }
+    a[target=_v] {
+      color: cyan;
+    }
+
+    [title~=man] {
+      background-color: aquamarine;
+    }
+    [class|=header] {
+      background-color: yellow;
+    }
+    [class^=text] {
+      background-color: blue;
+    }
+    [class $=font] {
+      background-color: cyan;
+    }
+    [class *=fa] {
+      background-color: green;
+    }
+
+  </style>
+</head>
+<body>
+  <p>attribute[target="_value"]{style}</p>
+  <a href="https://www.google.com" target="_p">Google</a>
+  <br>
+  <a href="https://www.facebook.com" target="_v">Facebook</a>
+  <br>
+  <a href="https://www.x.com">Twitter</a>
+
+  <hr>
+  <p>[attribute ~="value"]{style}</p>
+  <div title="man">hello, qwerty</div>
+  <div title="hi man">hi, qwerty</div>
+  <div title="hi">hi, qwerty</div>
+
+  <hr>
+  <p>[attribute |="value"]</p>
+  <h4 class="header-1">welcome to css selector</h4>
+  <P class="header-2">hello everyone</P>
+  <P class="header3">hello everyone</P>
+
+  <hr>
+  <p>[attribute ^="value"]</p>
+  <h4 class="text-1">welcome to css selector</h4>
+  <P class="text-2">hello everyone</P>
+  <P class="third text">hello everyone</P>
+
+  <hr>
+  <P>[attribute $="value"]</P>
+  <h4 class="first_font">welcome to css selector</h4>
+  <P class="font second">hello everyone</P>
+  <P class="third-font">hello everyone2</P>
+  <P class="thirdfont">hello everyone3</P>
+  <hr>
+
+  <p>[attribute *=value]</p>
+  <h4 class="first_ft">welcome to css selector</h4>
+  <P class="ft second">hello everyone</P>
+  <P class="third-ft">hello everyone2</P>
+  <P class="faft">hello everyone3</P>
+  <hr>
+
+</body>
+</html>

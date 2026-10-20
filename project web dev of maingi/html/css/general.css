@@ -1,0 +1,13 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+  padding-bottom: 1000px;
+}
+
+#about_section {
+  padding-left: 10px;
+  padding-right: 10px;
+}
